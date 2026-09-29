@@ -10,7 +10,6 @@ export async function onRequestPost(context) {
   const id = data.id || Date.now().toString();
   const created_at = new Date().toISOString();
 
-  // UPSERT（新規作成または既存IDの上書き保存）
   await context.env.DB.prepare(`
     INSERT INTO drafts (id, title, manzai, tech, created_at)
     VALUES (?, ?, ?, ?, ?)
@@ -22,4 +21,13 @@ export async function onRequestPost(context) {
   `).bind(id, data.title, data.manzai, data.tech, created_at).run();
 
   return Response.json({ success: true, id });
+}
+
+export async function onRequestDelete(context) {
+  const url = new URL(context.request.url);
+  const id = url.searchParams.get("id");
+  if (!id) return new Response("Missing id", { status: 400 });
+
+  await context.env.DB.prepare("DELETE FROM drafts WHERE id = ?").bind(id).run();
+  return Response.json({ success: true });
 }

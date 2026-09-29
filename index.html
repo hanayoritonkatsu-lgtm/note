@@ -13,6 +13,8 @@
       --card-bg: #1e293b;
       --accent: #38bdf8;
       --accent-hover: #0ea5e9;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
@@ -63,14 +65,26 @@
     textarea { resize: vertical; min-height: 80px; }
     button.btn { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; width: 100%; }
     button.btn:hover { background: var(--accent-hover); }
+    button.btn-secondary { background: #475569; color: #fff; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
+    button.btn-secondary:hover { background: #64748b; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-card { background: #131d2e; border: 1px solid var(--border); border-radius: 6px; padding: 12px; }
-    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .item-card { background: #131d2e; border: 1px solid var(--border); border-radius: 6px; padding: 12px; position: relative; }
+    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 70px; }
     .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); }
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
     .item-body { font-size: 0.85rem; color: var(--text-muted); white-space: pre-wrap; }
+    
+    .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+    .action-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+    .action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
+
     .char-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; background: #3b82f6; color: white; }
+    .concept-box { background: #0b1324; border-left: 4px solid var(--accent); padding: 12px 14px; margin-bottom: 12px; border-radius: 0 6px 6px 0; }
+    .concept-box h3 { font-size: 0.95rem; color: #fff; margin-bottom: 6px; }
+    .concept-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+    .concept-box ul { margin-left: 18px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
   </style>
 </head>
 <body>
@@ -88,14 +102,14 @@
   <div class="nav-tabs">
     <button class="nav-tab active" onclick="switchTab('tab-ideas', this)">💡 ネタ帳</button>
     <button class="nav-tab" onclick="switchTab('tab-editor', this)">📝 執筆・プロット</button>
-    <button class="nav-tab" onclick="switchTab('tab-chars', this)">👥 キャラ設定</button>
+    <button class="nav-tab" onclick="switchTab('tab-settings', this)">⚙️ 設定</button>
   </div>
 
   <div class="container">
     <!-- タブ1: ネタ帳 -->
     <div id="tab-ideas" class="tab-content active">
       <div class="card">
-        <h2>⚡ クイックネタ投下（D1即時保存）</h2>
+        <h2 id="idea-form-title">⚡ クイックネタ投下（D1即時保存）</h2>
         <input type="text" id="idea-title" placeholder="ネタの見出し（例：レジ締め1円合わない事件）">
         <textarea id="idea-body" placeholder="現場の出来事、スタッフの反応、ボヤきなど"></textarea>
         <div style="display: flex; gap: 8px;">
@@ -111,7 +125,10 @@
             <option value="公開済">公開済</option>
           </select>
         </div>
-        <button class="btn" onclick="saveIdea()">D1データベースへ送信</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn" id="idea-save-btn" onclick="saveIdea()">D1データベースへ送信</button>
+          <button class="btn-secondary" id="idea-cancel-btn" style="display: none;" onclick="resetIdeaForm()">キャンセル</button>
+        </div>
       </div>
 
       <div class="card">
@@ -131,7 +148,7 @@
         <textarea id="draft-tech" style="min-height: 140px;" placeholder="種明かし（実際に使ったツール、Geminiへのプロンプト、設定手順など）"></textarea>
         <div style="display: flex; gap: 8px;">
           <button class="btn" onclick="saveDraft()">下書きをD1に保存</button>
-          <button class="btn" style="background:#475569; color:#fff;" onclick="resetEditor()">新規作成</button>
+          <button class="btn-secondary" onclick="resetEditor()">新規作成</button>
         </div>
       </div>
       <div class="card">
@@ -140,8 +157,39 @@
       </div>
     </div>
 
-    <!-- タブ3: キャラ設定 -->
-    <div id="tab-chars" class="tab-content">
+    <!-- タブ3: 設定 -->
+    <div id="tab-settings" class="tab-content">
+      <!-- 執筆の北極星・コンセプトボード -->
+      <div class="card">
+        <h2>🧭 本書の北極星（コアコンセプト・軸となる考え）</h2>
+        
+        <div class="concept-box">
+          <h3>📌 メインテーマ</h3>
+          <p><strong>「40代脱サラ飲食店主が、金も暇もIT知識もない現場から、最新AIと二人三脚で立ち向かう『超パーソナル型DX』の軌跡」</strong></p>
+        </div>
+
+        <div class="concept-box" style="border-left-color: #38bdf8;">
+          <h3>🎯 読者に届けたいメッセージ（軸）</h3>
+          <ul>
+            <li><strong>「市販の高価なシステムに現場を合わせるな」</strong>：合わない服を無理に着るからDXは失敗する。現場の苦しみに合わせて小さく作る。</li>
+            <li><strong>「AIは人間の仕事を奪う敵ではなく、弱小個人店に配属された最強の軍師」</strong>：孤独な個人事業主の右腕として使い倒す。</li>
+            <li><strong>「現場の手触りを忘れない」</strong>：油の匂い、小銭の重み、スタッフの愚痴。泥臭いリアルがあるからこそ技術が輝く。</li>
+          </ul>
+        </div>
+
+        <div class="concept-box" style="border-left-color: #10b981;">
+          <h3>🎭 構成の黄金比（二段ロケット）</h3>
+          <p><strong>【前半：漫才】</strong> 店長とジェミーの掛け合いで現場の理不尽と笑いを描き、読者を惹き込む。<br>
+          <strong>【後半：解説】</strong> 「実はこれ、裏でこうやって解決した」と具体的なツール・プロンプト・手順を明かす。</p>
+        </div>
+
+        <div class="concept-box" style="border-left-color: #f59e0b;">
+          <h3>🎬 最終回の大伏線（エモい種明かし）</h3>
+          <p><strong>「この連載自体が、厨房の合間にゼロから自作したCloudflare＋AIの『超パーソナル型DX』で作られた成果物だった」</strong>という真実で物語を締めくくる。</p>
+        </div>
+      </div>
+
+      <!-- キャラクター設定 -->
       <div class="card">
         <h2>👥 パーティーメンバー設定資料</h2>
         <div class="item-card" style="margin-bottom: 10px;">
@@ -176,7 +224,9 @@
       if (el) el.classList.add('active');
     }
 
-    // ネタ一覧取得
+    // --- ネタ帳機能 ---
+    let currentIdeaId = null;
+
     async function fetchIdeas() {
       const list = document.getElementById('idea-list');
       list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">D1と通信中...</div>';
@@ -187,10 +237,15 @@
           list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">ストックされたネタはありません</div>';
           return;
         }
+        window._ideaCache = ideas;
         list.innerHTML = ideas.map(item => `
           <div class="item-card">
+            <div class="card-actions">
+              <button class="action-btn" onclick="editIdea('${item.id}')">編集</button>
+              <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
+            </div>
             <div class="item-header">
-              <span class="item-tag">${item.category} | ${item.status}</span>
+              <span class="item-tag">${escapeHtml(item.category)} | ${escapeHtml(item.status)}</span>
               <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
             </div>
             <div class="item-title">${escapeHtml(item.title)}</div>
@@ -202,13 +257,13 @@
       }
     }
 
-    // ネタ保存
     async function saveIdea() {
       const title = document.getElementById('idea-title').value.trim();
       const body = document.getElementById('idea-body').value.trim();
       if (!title) return alert('タイトルを入力してください');
 
       const payload = {
+        id: currentIdeaId,
         title,
         body,
         category: document.getElementById('idea-category').value,
@@ -221,15 +276,51 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        document.getElementById('idea-title').value = '';
-        document.getElementById('idea-body').value = '';
+        resetIdeaForm();
         fetchIdeas();
       } catch (e) {
         alert('保存に失敗しました');
       }
     }
 
-    // 下書き一覧取得
+    function editIdea(id) {
+      const idea = (window._ideaCache || []).find(i => i.id === id);
+      if (!idea) return;
+      currentIdeaId = idea.id;
+      document.getElementById('idea-title').value = idea.title;
+      document.getElementById('idea-body').value = idea.body || '';
+      document.getElementById('idea-category').value = idea.category;
+      document.getElementById('idea-status').value = idea.status;
+
+      document.getElementById('idea-form-title').innerText = '✏️ ネタの編集更新';
+      document.getElementById('idea-save-btn').innerText = '変更を更新保存';
+      document.getElementById('idea-cancel-btn').style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function resetIdeaForm() {
+      currentIdeaId = null;
+      document.getElementById('idea-title').value = '';
+      document.getElementById('idea-body').value = '';
+      document.getElementById('idea-form-title').innerText = '⚡ クイックネタ投下（D1即時保存）';
+      document.getElementById('idea-save-btn').innerText = 'D1データベースへ送信';
+      document.getElementById('idea-cancel-btn').style.display = 'none';
+    }
+
+    async function deleteIdea(id) {
+      if (!confirm('このネタを削除してもよろしいですか？')) return;
+      try {
+        await fetch(`/api/ideas?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+        if (currentIdeaId === id) resetIdeaForm();
+        fetchIdeas();
+      } catch (e) {
+        alert('削除に失敗しました');
+      }
+    }
+
+    // --- 下書き機能 ---
+    let currentDraftId = null;
+
     async function fetchDrafts() {
       const list = document.getElementById('draft-list');
       list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">D1と通信中...</div>';
@@ -242,7 +333,10 @@
         }
         window._draftCache = drafts;
         list.innerHTML = drafts.map(item => `
-          <div class="item-card" onclick="loadDraftToEditor('${item.id}')" style="cursor:pointer;">
+          <div class="item-card" style="cursor:pointer;" onclick="loadDraftToEditor('${item.id}')">
+            <div class="card-actions" onclick="event.stopPropagation()">
+              <button class="action-btn delete" onclick="deleteDraft('${item.id}')">削除</button>
+            </div>
             <div class="item-header">
               <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
             </div>
@@ -255,8 +349,6 @@
       }
     }
 
-    // 下書き保存
-    let currentDraftId = null;
     async function saveDraft() {
       const title = document.getElementById('draft-title').value.trim();
       if (!title) return alert('タイトルを入力してください');
@@ -300,13 +392,24 @@
       document.getElementById('draft-tech').value = '';
     }
 
+    async function deleteDraft(id) {
+      if (!confirm('この下書きを削除してもよろしいですか？')) return;
+      try {
+        await fetch(`/api/drafts?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
+        if (currentDraftId === id) resetEditor();
+        fetchDrafts();
+      } catch (e) {
+        alert('削除に失敗しました');
+      }
+    }
+
     function escapeHtml(str) {
       return str.replace(/[&<>'"]/g, tag => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
       }[tag] || tag));
     }
 
-    // スプラッシュ画面の表示制御（1.5秒維持、0.6秒フェードアウト、完了後は display: none）
+    // スプラッシュ画面の表示制御
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
