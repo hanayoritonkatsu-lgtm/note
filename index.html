@@ -68,16 +68,29 @@
     button.btn-secondary { background: #475569; color: #fff; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
     button.btn-secondary:hover { background: #64748b; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-card { background: #131d2e; border: 1px solid var(--border); border-radius: 6px; padding: 12px; position: relative; }
-    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 70px; }
+    
+    /* カード共通スタイル：クリッカブル */
+    .item-card { 
+      background: #131d2e; 
+      border: 1px solid var(--border); 
+      border-radius: 6px; 
+      padding: 12px; 
+      position: relative; 
+      cursor: pointer; 
+      transition: border-color 0.2s, background-color 0.2s;
+    }
+    .item-card:hover {
+      border-color: var(--accent);
+      background-color: #162438;
+    }
+    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 48px; }
     .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); }
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
     .item-body { font-size: 0.85rem; color: var(--text-muted); white-space: pre-wrap; }
     
-    .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; }
+    .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 2; }
     .action-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
-    .action-btn:hover { color: var(--text); border-color: var(--accent); }
     .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
 
     .char-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; background: #3b82f6; color: white; }
@@ -127,12 +140,12 @@
         </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn" id="idea-save-btn" onclick="saveIdea()">D1データベースへ送信</button>
-          <button class="btn-secondary" id="idea-cancel-btn" style="display: none;" onclick="resetIdeaForm()">キャンセル</button>
+          <button class="btn-secondary" id="idea-cancel-btn" style="display: none;" onclick="resetIdeaForm()">新規作成に戻す</button>
         </div>
       </div>
 
       <div class="card">
-        <h2>📋 クラウド同期ネタ一覧</h2>
+        <h2>📋 クラウド同期ネタ一覧（クリックで編集）</h2>
         <div id="idea-list" class="item-list"></div>
       </div>
     </div>
@@ -140,15 +153,15 @@
     <!-- タブ2: 執筆・プロット -->
     <div id="tab-editor" class="tab-content">
       <div class="card">
-        <h2>📝 下書きエディタ（二段ロケット型）</h2>
+        <h2 id="draft-form-title">📝 下書きエディタ（二段ロケット型）</h2>
         <input type="text" id="draft-title" placeholder="記事タイトル（例：第1話：レジ締めの小銭計算で夜中まで消耗する現場を〜）">
         <label style="font-size:0.8rem; color:var(--accent);">【前半：漫才対話パート】</label>
         <textarea id="draft-manzai" style="min-height: 140px;" placeholder="店長とジェミーの掛け合い（読者の共感・現場のボヤき）"></textarea>
         <label style="font-size:0.8rem; color:var(--accent);">【後半：実践解説パート】</label>
         <textarea id="draft-tech" style="min-height: 140px;" placeholder="種明かし（実際に使ったツール、Geminiへのプロンプト、設定手順など）"></textarea>
         <div style="display: flex; gap: 8px;">
-          <button class="btn" onclick="saveDraft()">下書きをD1に保存</button>
-          <button class="btn-secondary" onclick="resetEditor()">新規作成</button>
+          <button class="btn" id="draft-save-btn" onclick="saveDraft()">下書きをD1に保存</button>
+          <button class="btn-secondary" id="draft-cancel-btn" style="display: none;" onclick="resetEditor()">新規作成に戻す</button>
         </div>
       </div>
       <div class="card">
@@ -192,23 +205,23 @@
       <!-- キャラクター設定 -->
       <div class="card">
         <h2>👥 パーティーメンバー設定資料</h2>
-        <div class="item-card" style="margin-bottom: 10px;">
+        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
           <div class="item-title"><span class="char-badge" style="background:#0284c7;">AIパートナー</span> ジェミー（J.E.M.I.）</div>
           <div class="item-body">正式名：Joint Efficiency & Management Interface。20代後半風の毒舌ツンデレAI。論理でマスターを支える。口癖：「マスター、また無茶振りですか？」</div>
         </div>
-        <div class="item-card" style="margin-bottom: 10px;">
+        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
           <div class="item-title"><span class="char-badge" style="background:#ea580c;">主人公</span> 店長（マスター）</div>
           <div class="item-body">氷河期世代・40過ぎ脱サラ店主。現場改善の鬼だが横文字が苦手。スタッフ思いの熱血漢。</div>
         </div>
-        <div class="item-card" style="margin-bottom: 10px;">
+        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
           <div class="item-title"><span class="char-badge" style="background:#dc2626;">重戦士</span> マツさん（50代主婦）</div>
           <div class="item-body">パワー系。「なんとかなるよ！」が口癖。スマホの小さい画面と細かい手順が大嫌い。彼女が使えるUIなら合格。</div>
         </div>
-        <div class="item-card" style="margin-bottom: 10px;">
+        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
           <div class="item-title"><span class="char-badge" style="background:#059669;">氷結参謀</span> リン（20歳女子大生）</div>
           <div class="item-body">高1からの古参・裏番長。感情の起伏が少ない常識人枠。鋭いツッコミを入れる。猫が好き。</div>
         </div>
-        <div class="item-card" style="margin-bottom: 10px;">
+        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
           <div class="item-title"><span class="char-badge" style="background:#ca8a04;">残念勇者</span> ショータ（18歳高校生）</div>
           <div class="item-body">やる気満々の体育会系だが、おっちょこちょい。歩くトラブル発生装置。「〜ッス！」が口癖。</div>
         </div>
@@ -239,9 +252,8 @@
         }
         window._ideaCache = ideas;
         list.innerHTML = ideas.map(item => `
-          <div class="item-card">
-            <div class="card-actions">
-              <button class="action-btn" onclick="editIdea('${item.id}')">編集</button>
+          <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
+            <div class="card-actions" onclick="event.stopPropagation()">
               <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
             </div>
             <div class="item-header">
@@ -283,7 +295,7 @@
       }
     }
 
-    function editIdea(id) {
+    function loadIdeaToEditor(id) {
       const idea = (window._ideaCache || []).find(i => i.id === id);
       if (!idea) return;
       currentIdeaId = idea.id;
@@ -333,7 +345,7 @@
         }
         window._draftCache = drafts;
         list.innerHTML = drafts.map(item => `
-          <div class="item-card" style="cursor:pointer;" onclick="loadDraftToEditor('${item.id}')">
+          <div class="item-card" onclick="loadDraftToEditor('${item.id}')">
             <div class="card-actions" onclick="event.stopPropagation()">
               <button class="action-btn delete" onclick="deleteDraft('${item.id}')">削除</button>
             </div>
@@ -382,6 +394,8 @@
       document.getElementById('draft-title').value = draft.title;
       document.getElementById('draft-manzai').value = draft.manzai || '';
       document.getElementById('draft-tech').value = draft.tech || '';
+      document.getElementById('draft-form-title').innerText = '✏️ 下書きの編集更新';
+      document.getElementById('draft-cancel-btn').style.display = 'inline-block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
@@ -390,6 +404,8 @@
       document.getElementById('draft-title').value = '';
       document.getElementById('draft-manzai').value = '';
       document.getElementById('draft-tech').value = '';
+      document.getElementById('draft-form-title').innerText = '📝 下書きエディタ（二段ロケット型）';
+      document.getElementById('draft-cancel-btn').style.display = 'none';
     }
 
     async function deleteDraft(id) {
