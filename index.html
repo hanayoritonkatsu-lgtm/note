@@ -69,7 +69,7 @@
     button.btn-secondary:hover { background: #64748b; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
     
-    /* カード共通スタイル：クリッカブル */
+    /* カード共通スタイル（クリッカブル） */
     .item-card { 
       background: #131d2e; 
       border: 1px solid var(--border); 
@@ -83,7 +83,7 @@
       border-color: var(--accent);
       background-color: #162438;
     }
-    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 48px; }
+    .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 120px; }
     .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); }
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
@@ -91,6 +91,8 @@
     
     .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 2; }
     .action-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
+    .action-btn:hover { color: var(--text); border-color: var(--accent); }
+    .action-btn.copy:hover { color: #86efac; border-color: #10b981; background: rgba(16,185,129,0.1); }
     .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
 
     .char-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; background: #3b82f6; color: white; }
@@ -113,9 +115,9 @@
   </header>
 
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('tab-ideas', this)">💡 ネタ帳</button>
-    <button class="nav-tab" onclick="switchTab('tab-editor', this)">📝 執筆・プロット</button>
-    <button class="nav-tab" onclick="switchTab('tab-settings', this)">⚙️ 設定</button>
+    <button class="nav-tab active" data-tab="tab-ideas" onclick="switchTab('tab-ideas', this)">💡 ネタ帳</button>
+    <button class="nav-tab" data-tab="tab-editor" onclick="switchTab('tab-editor', this)">📝 執筆・プロット</button>
+    <button class="nav-tab" data-tab="tab-settings" onclick="switchTab('tab-settings', this)">⚙️ 設定</button>
   </div>
 
   <div class="container">
@@ -138,8 +140,9 @@
             <option value="公開済">公開済</option>
           </select>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn" id="idea-save-btn" onclick="saveIdea()">D1データベースへ送信</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn" id="idea-save-btn" style="flex: 2; min-width: 140px;" onclick="saveIdea()">D1データベースへ送信</button>
+          <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportCurrentIdea()">📋 コピー</button>
           <button class="btn-secondary" id="idea-cancel-btn" style="display: none;" onclick="resetIdeaForm()">新規作成に戻す</button>
         </div>
       </div>
@@ -152,6 +155,13 @@
 
     <!-- タブ2: 執筆・プロット -->
     <div id="tab-editor" class="tab-content">
+      <!-- AIプロット一括取り込み機能 -->
+      <details style="margin-bottom:16px; background:#131d2e; padding:10px; border-radius:6px; border:1px solid var(--border);">
+        <summary style="cursor:pointer; font-weight:bold; color:#10b981;">🤖 AIプロット一括取り込み（ここをクリック）</summary>
+        <textarea id="import-text" placeholder="ここにジェミーが作った専用テキストをまるごと貼り付けてください" style="min-height:100px; margin-top:10px;"></textarea>
+        <button class="btn" style="background:#10b981; color:#fff;" onclick="importDraft()">各項目に一括振り分け</button>
+      </details>
+
       <div class="card">
         <h2 id="draft-form-title">📝 下書きエディタ（二段ロケット型）</h2>
         <input type="text" id="draft-title" placeholder="記事タイトル（例：第1話：レジ締めの小銭計算で夜中まで消耗する現場を〜）">
@@ -159,8 +169,9 @@
         <textarea id="draft-manzai" style="min-height: 140px;" placeholder="店長とジェミーの掛け合い（読者の共感・現場のボヤき）"></textarea>
         <label style="font-size:0.8rem; color:var(--accent);">【後半：実践解説パート】</label>
         <textarea id="draft-tech" style="min-height: 140px;" placeholder="種明かし（実際に使ったツール、Geminiへのプロンプト、設定手順など）"></textarea>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn" id="draft-save-btn" onclick="saveDraft()">下書きをD1に保存</button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn" id="draft-save-btn" style="flex: 2; min-width: 140px;" onclick="saveDraft()">下書きをD1に保存</button>
+          <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportDraft()">📋 全文コピー</button>
           <button class="btn-secondary" id="draft-cancel-btn" style="display: none;" onclick="resetEditor()">新規作成に戻す</button>
         </div>
       </div>
@@ -177,8 +188,8 @@
         <h2>🧭 本書の北極星（コアコンセプト・軸となる考え）</h2>
         
         <div class="concept-box">
-          <h3>📌 メインテーマ</h3>
-          <p><strong>「40代脱サラ飲食店主が、金も暇もIT知識もない現場から、最新AIと二人三脚で立ち向かう『超パーソナル型DX』の軌跡」</strong></p>
+          <h3>📌 メインタイトル</h3>
+          <p><strong>「就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件」</strong></p>
         </div>
 
         <div class="concept-box" style="border-left-color: #38bdf8;">
@@ -230,11 +241,67 @@
   </div>
 
   <script>
+    const TABS = ['tab-ideas', 'tab-editor', 'tab-settings'];
+
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(e => e.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      if (el) el.classList.add('active');
+      
+      const targetContent = document.getElementById(tabId);
+      if (targetContent) targetContent.classList.add('active');
+
+      const targetTabBtn = el || document.querySelector(`.nav-tab[data-tab="${tabId}"]`);
+      if (targetTabBtn) targetTabBtn.classList.add('active');
+    }
+
+    // --- スワイプによるタブ切り替え機能 ---
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    window.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      const touchEndY = e.changedTouches[0].screenY;
+      handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
+    }, { passive: true });
+
+    function handleSwipe(startX, startY, endX, endY) {
+      const diffX = endX - startX;
+      const diffY = endY - startY;
+      
+      // 横移動60px以上かつ縦移動の1.5倍以上のときだけスワイプ判定
+      if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+        const activeTabEl = document.querySelector('.tab-content.active');
+        if (!activeTabEl) return;
+        const currentTabId = activeTabEl.id;
+        const currentIndex = TABS.indexOf(currentTabId);
+
+        if (diffX < 0 && currentIndex < TABS.length - 1) {
+          switchTab(TABS[currentIndex + 1]);
+        } else if (diffX > 0 && currentIndex > 0) {
+          switchTab(TABS[currentIndex - 1]);
+        }
+      }
+    }
+
+    // --- クリップボード共通コピー処理 ---
+    async function copyToClipboard(text, successMsg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert(successMsg);
+      } catch (err) {
+        const tempArea = document.createElement('textarea');
+        tempArea.value = text;
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempArea);
+        alert(successMsg);
+      }
     }
 
     // --- ネタ帳機能 ---
@@ -254,6 +321,7 @@
         list.innerHTML = ideas.map(item => `
           <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
             <div class="card-actions" onclick="event.stopPropagation()">
+              <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
               <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
             </div>
             <div class="item-header">
@@ -319,6 +387,25 @@
       document.getElementById('idea-cancel-btn').style.display = 'none';
     }
 
+    function exportCurrentIdea() {
+      const title = document.getElementById('idea-title').value.trim();
+      const body = document.getElementById('idea-body').value.trim();
+      const category = document.getElementById('idea-category').value;
+      const status = document.getElementById('idea-status').value;
+
+      if (!title && !body) return alert('コピーするネタがありません！');
+
+      const text = `【ネタ】${title}\n【分類】${category}（${status}）\n\n${body}`;
+      copyToClipboard(text, 'ネタの内容をクリップボードにコピーしました！');
+    }
+
+    function copyIdeaItem(id) {
+      const idea = (window._ideaCache || []).find(i => i.id === id);
+      if (!idea) return;
+      const text = `【ネタ】${idea.title}\n【分類】${idea.category}（${idea.status}）\n\n${idea.body || ''}`;
+      copyToClipboard(text, 'ネタの内容をクリップボードにコピーしました！');
+    }
+
     async function deleteIdea(id) {
       if (!confirm('このネタを削除してもよろしいですか？')) return;
       try {
@@ -332,6 +419,33 @@
 
     // --- 下書き機能 ---
     let currentDraftId = null;
+
+    function importDraft() {
+      const text = document.getElementById('import-text').value;
+      if (!text) return alert('テキストが貼り付けられていません！');
+      
+      const titleMatch = text.match(/【タイトル】\n([\s\S]*?)(?=\n【漫才パート】|$)/);
+      const manzaiMatch = text.match(/【漫才パート】\n([\s\S]*?)(?=\n【解説パート】|$)/);
+      const techMatch = text.match(/【解説パート】\n([\s\S]*?)$/);
+
+      if (titleMatch) document.getElementById('draft-title').value = titleMatch[1].trim();
+      if (manzaiMatch) document.getElementById('draft-manzai').value = manzaiMatch[1].trim();
+      if (techMatch) document.getElementById('draft-tech').value = techMatch[1].trim();
+      
+      document.getElementById('import-text').value = '';
+      alert('各入力欄に振り分けました！');
+    }
+
+    function exportDraft() {
+      const title = document.getElementById('draft-title').value.trim();
+      const manzai = document.getElementById('draft-manzai').value.trim();
+      const tech = document.getElementById('draft-tech').value.trim();
+
+      if (!title && !manzai && !tech) return alert('コピーする内容がありません！');
+
+      const formattedText = `【タイトル】\n${title}\n\n【漫才パート】\n${manzai}\n\n【解説パート】\n${tech}`;
+      copyToClipboard(formattedText, '下書き全文をクリップボードにコピーしました！');
+    }
 
     async function fetchDrafts() {
       const list = document.getElementById('draft-list');
@@ -425,7 +539,7 @@
       }[tag] || tag));
     }
 
-    // スプラッシュ画面の表示制御
+    // スプラッシュ画面の表示制御（1.5秒維持、0.6秒フェードアウト）
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
