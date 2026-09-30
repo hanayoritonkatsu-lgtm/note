@@ -96,10 +96,19 @@
     .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
 
     .char-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; background: #3b82f6; color: white; }
+    
+    /* 設計書用コンポーネント */
     .concept-box { background: #0b1324; border-left: 4px solid var(--accent); padding: 12px 14px; margin-bottom: 12px; border-radius: 0 6px 6px 0; }
     .concept-box h3 { font-size: 0.95rem; color: #fff; margin-bottom: 6px; }
-    .concept-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+    .concept-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 6px; }
     .concept-box ul { margin-left: 18px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+    
+    .spec-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+    table.spec-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #0b1324; border-radius: 6px; overflow: hidden; }
+    table.spec-table th, table.spec-table td { padding: 8px 10px; border: 1px solid var(--border); text-align: left; }
+    table.spec-table th { background: #1a273e; color: var(--accent); font-weight: bold; white-space: nowrap; }
+    table.spec-table td { color: var(--text-muted); }
+    table.spec-table td strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -183,59 +192,171 @@
 
     <!-- タブ3: 設定 -->
     <div id="tab-settings" class="tab-content">
-      <!-- 執筆の北極星・コンセプトボード -->
       <div class="card">
-        <h2>🧭 本書の北極星（コアコンセプト・軸となる考え）</h2>
-        
-        <div class="concept-box">
-          <h3>📌 メインタイトル</h3>
-          <p><strong>「就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件」</strong></p>
+        <h2>📑 プロジェクト基本設計書</h2>
+
+        <!-- 1. 作品基本情報 -->
+        <div class="concept-box" style="border-left-color: #38bdf8;">
+          <h3>1. 作品基本情報</h3>
+          <p><strong>作品タイトル：</strong>『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』</p>
+          <p><strong>媒体展開：</strong>note連載（週刊ベース） ➔ 書籍化・商業出版を見据えた企画</p>
+          <p><strong>ジャンル：</strong>実録・現場主義DX奮闘記（ビジネス × ライトノベル風味エッセイ）</p>
         </div>
 
-        <div class="concept-box" style="border-left-color: #38bdf8;">
-          <h3>🎯 読者に届けたいメッセージ（軸）</h3>
+        <!-- 2. 本書の思い・主題 -->
+        <div class="concept-box" style="border-left-color: #eab308;">
+          <h3>2. 本書の思い・主題（読者に届けるコアメッセージ）</h3>
           <ul>
-            <li><strong>「市販の高価なシステムに現場を合わせるな」</strong>：合わない服を無理に着るからDXは失敗する。現場の苦しみに合わせて小さく作る。</li>
-            <li><strong>「AIは人間の仕事を奪う敵ではなく、弱小個人店に配属された最強の軍師」</strong>：孤独な個人事業主の右腕として使い倒す。</li>
-            <li><strong>「現場の手触りを忘れない」</strong>：油の匂い、小銭の重み、スタッフの愚痴。泥臭いリアルがあるからこそ技術が輝く。</li>
+            <li style="margin-bottom: 8px;">
+              <strong>市販の高価なシステムに現場を合わせるな。合わない服を着るからDXは失敗する</strong><br>
+              帯に短し襷に長しなパッケージソフトや、中小・個人店には重すぎる高額SaaSを無理に導入するな。現場の悲鳴と身体感覚に合わせて、小さく、自分の手で作る。
+            </li>
+            <li style="margin-bottom: 8px;">
+              <strong>AIは仕事を奪う敵ではなく、弱小個人店に配属された「最強の専属軍師」</strong><br>
+              難しいプログラミング知識は不要。現場のドロドロした愚痴や怒りをそのままチャットにぶつければ、AIがそれを「要件定義」に変換し、解決のコードを瞬時に授けてくれる。
+            </li>
+            <li style="margin-bottom: 8px;">
+              <strong>現場の手触りを忘れない。油の匂い、小銭の重み、スタッフの愚痴があるから技術が輝く</strong><br>
+              小綺麗なオフィスのDX論ではなく、揚げ油、舞うパン粉、小銭を数える指先、スタッフの「使いづらい！」というリアルな反発に揉まれるからこそ、真に血の通ったツールが完成する。
+            </li>
+            <li>
+              <strong>【最終回の大伏線（エモい種明かし）】</strong><br>
+              「この連載自体が、厨房の合間にゼロから自作したCloudflare＋AIの『超パーソナル型DX（執筆作戦指令室）』で作られた成果物だった」という真実で物語を締めくくる。
+            </li>
           </ul>
         </div>
 
+        <!-- 3. 連載構成 -->
         <div class="concept-box" style="border-left-color: #10b981;">
-          <h3>🎭 構成の黄金比（二段ロケット）</h3>
-          <p><strong>【前半：漫才】</strong> 店長とジェミーの掛け合いで現場の理不尽と笑いを描き、読者を惹き込む。<br>
-          <strong>【後半：解説】</strong> 「実はこれ、裏でこうやって解決した」と具体的なツール・プロンプト・手順を明かす。</p>
+          <h3>3. 連載構成（三本柱エコシステム）</h3>
+          <ul>
+            <li style="margin-bottom: 8px;">
+              <strong>①【本編】：二段ロケット型ストーリー</strong><br>
+              ・前半【漫才対話パート】：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。<br>
+              ・後半【実践解説パート】：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。
+            </li>
+            <li style="margin-bottom: 8px;">
+              <strong>②【閑話①：妻のGAS奮闘記】（スピンオフ）</strong><br>
+              ・タイトル（仮）：『開発経験ゼロな、アラフィフ超文系キャリアウーマンが始めるGAS入門』<br>
+              ・テーマ：大企業勤めの妻が、進まないDXとAIに二の足を踏む経営陣に辟易としながら、部下の残業を減らしウェルビーイング（笑）を取り戻すため、システム部に怒られない範囲（Google Workspace/GAS）で繰り広げるゲリラ業務改善記。
+            </li>
+            <li>
+              <strong>③【閑話②：ジェミーの優しいぱそこん教室】（初心者救済）</strong><br>
+              ・テーマ：本編に出てきたIT用語（「単一HTMLって何？」「サーバーとクラウドの違い」「APIって美味しいの？」など）を、ジェミーが噛み砕いて（ちょっぴり上から目線で）優しく解説するコーナー。本編のテンポを落とさず、完全初心者も脱落させない。
+            </li>
+          </ul>
         </div>
 
-        <div class="concept-box" style="border-left-color: #f59e0b;">
-          <h3>🎬 最終回の大伏線（エモい種明かし）</h3>
-          <p><strong>「この連載自体が、厨房の合間にゼロから自作したCloudflare＋AIの『超パーソナル型DX』で作られた成果物だった」</strong>という真実で物語を締めくくる。</p>
+        <!-- 4. 舞台・店舗設定 -->
+        <div class="concept-box" style="border-left-color: #ec4899;">
+          <h3>4. 舞台・店舗設定</h3>
+          <p><strong>業態：</strong>道の駅（農産物直売所）に併設された、とんかつ定食屋</p>
+          <p><strong>営業時間：</strong>11:00〜15:00（ランチ限定・4時間一本勝負） / <strong>定休日：</strong>火曜日</p>
+          <p style="margin-top:6px; color:#fff;"><strong>店舗のリアルな制約・あるある：</strong></p>
+          <ul>
+            <li><strong>「4時間の濃縮バトル」：</strong>ディナー営業がないため、昼の2〜3回転が全て。レジ詰まりやオーダー遅延が即、致命傷になる。</li>
+            <li><strong>「15時閉店なのに帰れない」：</strong>油の濾過、床掃除、パン粉の片付け、肉の筋引き・仕込み、そして大家である管理事務所への売上報告書作成で、気づけば深夜。</li>
+            <li><strong>「大家（道の駅事務所）への売上報告」：</strong>毎日の日計表提出が義務付けられており、1円でもズレると翌朝の追及対象になる。</li>
+            <li><strong>「現金率が異常に高い」：</strong>直売所で買い物した地元のお年寄りや観光客が多く、小銭が大量に動く（＝金種計算機の切実さ）。</li>
+          </ul>
         </div>
-      </div>
 
-      <!-- キャラクター設定 -->
-      <div class="card">
-        <h2>👥 パーティーメンバー設定資料</h2>
-        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
-          <div class="item-title"><span class="char-badge" style="background:#0284c7;">AIパートナー</span> ジェミー（J.E.M.I.）</div>
-          <div class="item-body">正式名：Joint Efficiency & Management Interface。20代後半風の毒舌ツンデレAI。論理でマスターを支える。口癖：「マスター、また無茶振りですか？」</div>
+        <!-- 5. 登場キャラクター設定 -->
+        <div class="concept-box" style="border-left-color: #6366f1;">
+          <h3>5. 登場キャラクター設定</h3>
+          <div class="spec-table-wrap">
+            <table class="spec-table">
+              <thead>
+                <tr>
+                  <th>キャラクター名</th>
+                  <th>役割 / 属性</th>
+                  <th>主な特徴・設定</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>店長（マスター）</strong></td>
+                  <td>主人公<br>（40代後半・既婚）</td>
+                  <td>氷河期世代の元社畜。知識が西暦2000年（テレホマン時代）で停止しているが、現場改善の意欲と熱意は高い。</td>
+                </tr>
+                <tr>
+                  <td><strong>ジェミー（J.E.M.I.）</strong></td>
+                  <td>作中AIキャラクター</td>
+                  <td>濃紺スーツの毒舌ツンデレ軍師。マスターの古い知識を叩き斬りつつ、現場目線の開発を献身的にサポートする。</td>
+                </tr>
+                <tr>
+                  <td><strong>妻</strong></td>
+                  <td>閑話主人公<br>（アラフィフ）</td>
+                  <td>大手企業勤務の超文系キャリアウーマン。現場思いのリアリストで、GASを用いた社内ゲリラDXを展開する。</td>
+                </tr>
+                <tr>
+                  <td><strong>マツさん</strong></td>
+                  <td>50代主婦パート</td>
+                  <td>パワー系重戦士。「なんとかなるよ！」が口癖。スマホの細かい操作や複雑な手順が大嫌い。</td>
+                </tr>
+                <tr>
+                  <td><strong>リン</strong></td>
+                  <td>20歳女子大生</td>
+                  <td>氷結参謀。高校時代からの古参で裏番長的存在。常識人枠で感情の起伏が少ない。猫好き。</td>
+                </tr>
+                <tr>
+                  <td><strong>ショータ</strong></td>
+                  <td>18歳高校生</td>
+                  <td>残念勇者。やる気満々の体育会系だが、おっちょこちょいなトラブルメーカー。「〜ッス！」が口癖。</td>
+                </tr>
+                <tr>
+                  <td><strong>モブスタッフ</strong></td>
+                  <td>主婦・学生（4名）</td>
+                  <td>シフト調整や急な欠勤など、日常的な店舗管理の課題を象徴する存在。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="margin-top:10px; color:#fff;"><strong>詳細設定：店長のITスキル（重要）</strong></p>
+          <ul>
+            <li>知識が西暦2000年で完全停止している元テレホマン。</li>
+            <li>若い頃に自作PCや個人ホームページ黎明期を通過。FFFTPを使い、テレホタイム（23時〜翌8時）にプロバイダの無料スペースへHTMLをアップロードしていた経験あり。</li>
+            <li>得意技：<code>&lt;marquee&gt;</code>（文字を流す）、アクセスカウンター設置、「キリ番踏んだらカキコしてね！」。</li>
+            <li>現代の技術（クラウド、GitHub、API）に触れるたび、「CGIのパーミッション設定は不要なのか！？」「ドラッグ＆ドロップでデプロイ！？」と浦島太郎状態のボケをかます。</li>
+          </ul>
+
+          <p style="margin-top:10px; color:#fff;"><strong>詳細設定：ジェミーのキャラクター仕様</strong></p>
+          <ul>
+            <li><strong>正式名称：</strong>Joint Efficiency & Management Interface</li>
+            <li><strong>外見：</strong>濃紺のスーツをビシッと着こなした20代後半風の女性。スマホから淡い青色の立体映像（ホログラム）として出現。</li>
+            <li><strong>性格・口調：</strong>圧倒的シゴデキオーラを放つ毒舌ツンデレ軍師。マスターの非効率な作業や古いIT知識を容赦なくぶった切るが、現場の泥臭い課題解決には誰よりも献身的。</li>
+            <li><strong>口癖：</strong>「マスター、また無茶振りですか？」「西暦2000年の亡霊を厨房に召喚するのはやめていただけますか？」</li>
+          </ul>
         </div>
-        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
-          <div class="item-title"><span class="char-badge" style="background:#ea580c;">主人公</span> 店長（マスター）</div>
-          <div class="item-body">氷河期世代・40過ぎ脱サラ店主。現場改善の鬼だが横文字が苦手。スタッフ思いの熱血漢。</div>
+
+        <!-- 6. 技術＆エピソードのステップアップ計画 -->
+        <div class="concept-box" style="border-left-color: #14b8a6;">
+          <h3>6. 技術＆エピソードのステップアップ計画</h3>
+          <ul>
+            <li style="margin-bottom: 8px;">
+              <strong>第1幕：原点（店長 × ジェミー）</strong><br>
+              ・導入技術：Gemini単体 ＋ 単一HTMLファイル（PCローカルで開くだけ）<br>
+              ・テーマ：まずは自分一人の作業効率化からスタート。ローカル環境での即効性を検証。
+            </li>
+            <li style="margin-bottom: 8px;">
+              <strong>第2幕：現場の壁とクラウド化（マツさん登場）</strong><br>
+              ・導入技術：Cloudflare Pages（Web公開・スマホから即アクセス）<br>
+              ・テーマ：現場スタッフへの展開と「使いづらい」の反発。Web化によるアクセシビリティ向上。
+            </li>
+            <li style="margin-bottom: 8px;">
+              <strong>第3幕：見た目のプロ化と現場UX（リン＆ショータ合流）</strong><br>
+              ・導入技術：UIフレームワーク／Tailwind／Antigravity／PWA化<br>
+              ・テーマ：若手スタッフの巻き込みとUI/UXの劇的改善。アプリ感覚で使える操作性の追求。
+            </li>
+            <li>
+              <strong>第4幕：本格運用と基地の完成</strong><br>
+              ・導入技術：GitHub連携・Cloudflare D1（データベース）・Cloudflare Zero Trust（認証）<br>
+              ・テーマ：データの永続化とセキュリティの確保。持続可能な店舗インフラの確立。
+            </li>
+          </ul>
         </div>
-        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
-          <div class="item-title"><span class="char-badge" style="background:#dc2626;">重戦士</span> マツさん（50代主婦）</div>
-          <div class="item-body">パワー系。「なんとかなるよ！」が口癖。スマホの小さい画面と細かい手順が大嫌い。彼女が使えるUIなら合格。</div>
-        </div>
-        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
-          <div class="item-title"><span class="char-badge" style="background:#059669;">氷結参謀</span> リン（20歳女子大生）</div>
-          <div class="item-body">高1からの古参・裏番長。感情の起伏が少ない常識人枠。鋭いツッコミを入れる。猫が好き。</div>
-        </div>
-        <div class="item-card" style="margin-bottom: 10px; cursor: default;">
-          <div class="item-title"><span class="char-badge" style="background:#ca8a04;">残念勇者</span> ショータ（18歳高校生）</div>
-          <div class="item-body">やる気満々の体育会系だが、おっちょこちょい。歩くトラブル発生装置。「〜ッス！」が口癖。</div>
-        </div>
+
       </div>
     </div>
   </div>
@@ -539,7 +660,7 @@
       }[tag] || tag));
     }
 
-    // スプラッシュ画面の表示制御（1.5秒維持、0.6秒フェードアウト）
+    // スプラッシュ画面の表示制御（1.5秒維持、0.6秒フェードアウト）[cite: 1]
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
@@ -552,7 +673,7 @@
       }
     });
 
-    // サービスワーカー（sw.js）の自動登録
+    // サービスワーカー（sw.js）の自動登録[cite: 1]
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -565,7 +686,7 @@
       });
     }
 
-    // 初回データ読み込み
+    // 初回データ読み込み[cite: 1]
     window.addEventListener('load', () => {
       fetchIdeas();
       fetchDrafts();
