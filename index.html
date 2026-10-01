@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#1e293b">
   <title>★Pjt 執筆作戦指令室</title>
   <link rel="manifest" href="manifest.json">
@@ -21,7 +21,7 @@
       --tag-bg: #334155;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; overscroll-behavior-y: contain; }
 
     /* スプラッシュ画面スタイル */
     #splash-screen {
@@ -62,7 +62,12 @@
     .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
     .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
     input, textarea, select { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.95rem; }
-    textarea { resize: vertical; min-height: 80px; }
+    
+    /* リサイズドラッグによる誤操作・更新を防ぐため resize:none */
+    textarea { resize: none; min-height: 80px; }
+    .fullscreen-trigger { cursor: pointer; }
+    .fullscreen-trigger:focus { border-color: var(--accent); outline: none; }
+    
     button.btn { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; width: 100%; }
     button.btn:hover { background: var(--accent-hover); }
     button.btn-secondary { background: #475569; color: #fff; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
@@ -95,8 +100,58 @@
     .action-btn.copy:hover { color: #86efac; border-color: #10b981; background: rgba(16,185,129,0.1); }
     .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
 
-    .char-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-right: 4px; background: #3b82f6; color: white; }
-    
+    /* 全画面入力モーダル */
+    #fs-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #090d16;
+      z-index: 10000;
+      flex-direction: column;
+      padding: 12px;
+    }
+    #fs-modal.active {
+      display: flex;
+    }
+    .fs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .fs-header-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    .fs-done-btn {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    #fs-textarea {
+      flex: 1;
+      width: 100%;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 1.05rem;
+      line-height: 1.6;
+      padding: 14px;
+      border-radius: 8px;
+      outline: none;
+      resize: none;
+      margin-bottom: 0;
+    }
+
     /* 設計書用コンポーネント（アコーディオン） */
     details.concept-accordion {
       background: #0b1324;
@@ -163,6 +218,15 @@
     <img src="logo.png" alt="ハナトンソフト ロゴ" id="splash-logo">
   </div>
 
+  <!-- 全画面入力モーダル画面 -->
+  <div id="fs-modal">
+    <div class="fs-header">
+      <span class="fs-header-title" id="fs-modal-label">全画面エディタ</span>
+      <button class="fs-done-btn" onclick="closeFullscreenEditor()">完了 ✓</button>
+    </div>
+    <textarea id="fs-textarea" placeholder="ここに集中して執筆してください..."></textarea>
+  </div>
+
   <header>
     <h1>★Pjt 執筆作戦指令室</h1>
     <span style="font-size: 0.8rem; color: var(--text-muted);">Cloudflare D1 & Zero Trust</span>
@@ -180,7 +244,7 @@
       <div class="card">
         <h2 id="idea-form-title">⚡ クイックネタ投下（D1即時保存）</h2>
         <input type="text" id="idea-title" placeholder="ネタの見出し（例：レジ締め1円合わない事件）">
-        <textarea id="idea-body" placeholder="現場の出来事、スタッフの反応、ボヤきなど"></textarea>
+        <textarea id="idea-body" class="fullscreen-trigger" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('idea-body', '💡 ネタ帳の本文入力')"></textarea>
         <div style="display: flex; gap: 8px;">
           <select id="idea-category" style="flex: 1;">
             <option value="店舗本編">店舗本編（飲食店）</option>
@@ -219,10 +283,10 @@
       <div class="card">
         <h2 id="draft-form-title">📝 下書きエディタ（二段ロケット型）</h2>
         <input type="text" id="draft-title" placeholder="記事タイトル（例：第1話：レジ締めの小銭計算で夜中まで消耗する現場を〜）">
-        <label style="font-size:0.8rem; color:var(--accent);">【前半：漫才対話パート】</label>
-        <textarea id="draft-manzai" style="min-height: 140px;" placeholder="店長とジェミーの掛け合い（読者の共感・現場のボヤき）"></textarea>
-        <label style="font-size:0.8rem; color:var(--accent);">【後半：実践解説パート】</label>
-        <textarea id="draft-tech" style="min-height: 140px;" placeholder="種明かし（実際に使ったツール、Geminiへのプロンプト、設定手順など）"></textarea>
+        <label style="font-size:0.8rem; color:var(--accent);">【前半：漫才対話パート】（タップで全画面）</label>
+        <textarea id="draft-manzai" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-manzai', '🎭 前半：漫才対話パートの編集')"></textarea>
+        <label style="font-size:0.8rem; color:var(--accent);">【後半：実践解説パート】（タップで全画面）</label>
+        <textarea id="draft-tech" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-tech', '🛠️ 後半：実践解説パートの編集')"></textarea>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="btn" id="draft-save-btn" style="flex: 2; min-width: 140px;" onclick="saveDraft()">下書きをD1に保存</button>
           <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportDraft()">📋 全文コピー</button>
@@ -295,7 +359,7 @@
               </li>
               <li>
                 <strong>③【閑話②：ジェミーの優しいぱそこん教室】（初心者救済）</strong><br>
-                ・テーマ：本編に出てきたIT用語（「単一HTMLって何？」「サーバーとクラウドの違い」「APIって美味しいの？」など）を、ジェミーが噛み砕いて（ちょっぴり上から目線で）優しく解説するコーナー。本編のテンポを落とさず、完全初心者も脱落させない。
+                ・テーマ：本編に出てきたIT用語（「単一HTMLって何？」「サーバーとクラウドの違い」「APIって美味しいの？」など）を、ジェミーが噛み砕いて（ちょっぴり上から目線で）優しく解説するコーナー。本編のテンポを落さず、完全初心者も脱落させない。
               </li>
             </ul>
           </div>
@@ -435,16 +499,45 @@
       if (targetTabBtn) targetTabBtn.classList.add('active');
     }
 
+    // --- 全画面エディタ制御 ---
+    let activeInputTargetId = null;
+
+    function openFullscreenEditor(targetId, title) {
+      activeInputTargetId = targetId;
+      const targetEl = document.getElementById(targetId);
+      const fsTextarea = document.getElementById('fs-textarea');
+      const fsLabel = document.getElementById('fs-modal-label');
+
+      fsLabel.innerText = title || '全画面エディタ';
+      fsTextarea.value = targetEl.value;
+
+      document.getElementById('fs-modal').classList.add('active');
+      fsTextarea.focus();
+    }
+
+    function closeFullscreenEditor() {
+      if (activeInputTargetId) {
+        const targetEl = document.getElementById(activeInputTargetId);
+        const fsTextarea = document.getElementById('fs-textarea');
+        targetEl.value = fsTextarea.value;
+      }
+      document.getElementById('fs-modal').classList.remove('active');
+      activeInputTargetId = null;
+    }
+
     // --- スワイプによるタブ切り替え機能 ---
     let touchStartX = 0;
     let touchStartY = 0;
 
     window.addEventListener('touchstart', (e) => {
+      // 全画面エディタが開いている時はスワイプ無効
+      if (document.getElementById('fs-modal').classList.contains('active')) return;
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
+      if (document.getElementById('fs-modal').classList.contains('active')) return;
       const touchEndX = e.changedTouches[0].screenX;
       const touchEndY = e.changedTouches[0].screenY;
       handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
@@ -454,7 +547,6 @@
       const diffX = endX - startX;
       const diffY = endY - startY;
       
-      // 横移動60px以上かつ縦移動の1.5倍以上のときだけスワイプ判定
       if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
         const activeTabEl = document.querySelector('.tab-content.active');
         if (!activeTabEl) return;
@@ -720,7 +812,7 @@
       }[tag] || tag));
     }
 
-    // スプラッシュ画面の表示制御（1.5秒維持、0.6秒フェードアウト）[cite: 1]
+    // スプラッシュ画面の表示制御
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
@@ -733,7 +825,7 @@
       }
     });
 
-    // サービスワーカー（sw.js）の自動登録[cite: 1]
+    // サービスワーカー（sw.js）の自動登録
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -746,7 +838,7 @@
       });
     }
 
-    // 初回データ読み込み[cite: 1]
+    // 初回データ読み込み
     window.addEventListener('load', () => {
       fetchIdeas();
       fetchDrafts();
