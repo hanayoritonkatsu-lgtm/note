@@ -307,10 +307,10 @@
       <div class="card">
         <h2 id="draft-form-title">📝 下書きエディタ（二段ロケット型）</h2>
         <input type="text" id="draft-title" placeholder="記事タイトル（例：第1話：レジ締めの小銭計算で夜中まで消耗する現場を〜）">
-        <label style="font-size:0.8rem; color:var(--accent);">【前半：漫才対話パート】（タップで全画面）</label>
-        <textarea id="draft-manzai" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-manzai', '🎭 前半：漫才対話パートの編集')"></textarea>
-        <label style="font-size:0.8rem; color:var(--accent);">【後半：実践解説パート】（タップで全画面）</label>
-        <textarea id="draft-tech" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-tech', '🛠️ 後半：実践解説パートの編集')"></textarea>
+        <label style="font-size:0.8rem; color:var(--accent);">【前半：現場ノベル・漫才パート】（タップで全画面）</label>
+        <textarea id="draft-manzai" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-manzai', '🎭 前半：現場ノベル・漫才パートの編集')"></textarea>
+        <label style="font-size:0.8rem; color:var(--accent);">【後半：現場DX・実践解説パート】（タップで全画面）</label>
+        <textarea id="draft-tech" class="fullscreen-trigger" style="min-height: 100px;" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('draft-tech', '🛠️ 後半：現場DX・実践解説パートの編集')"></textarea>
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="btn" id="draft-save-btn" style="flex: 2; min-width: 140px;" onclick="saveDraft()">下書きをD1に保存</button>
           <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportDraft()">📋 全文コピー</button>
@@ -327,7 +327,7 @@
     <div id="tab-settings" class="tab-content">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h2 style="margin-bottom:0;">📑 プロジェクト基本設計書（完全統合版）</h2>
+          <h2 style="margin-bottom:0;">📑 プロジェクト基本設計書（完全統合・最終決定版）</h2>
           <span style="font-size:0.75rem; color:var(--text-muted);">タイトルをタップして開閉</span>
         </div>
 
@@ -391,8 +391,8 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
             <ul>
               <li style="margin-bottom: 10px;">
                 <strong>①【本編】：二段ロケット型ストーリー</strong><br>
-                ・<strong>前半【漫才対話パート】</strong>：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。<br>
-                ・<strong>後半【実践解説パート】</strong>：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。
+                ・<strong>前半【現場ノベル・漫才パート】</strong>：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。<br>
+                ・<strong>後半【現場DX・実践解説パート】</strong>：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。
               </li>
               <li style="margin-bottom: 10px;">
                 <strong>②【閑話①：妻・マチコのGAS奮闘記】（スピンオフ・全4回完結）</strong><br>
@@ -433,11 +433,20 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
           </div>
         </details>
 
-        <!-- 5. 登場キャラクター設定 -->
+        <!-- 5. 登場キャラクター設定・台詞集 -->
         <details class="concept-accordion" style="border-left-color: #6366f1;">
-          <summary>5. 登場キャラクター設定</summary>
+          <summary>5. 登場キャラクター設定・台詞集</summary>
           <div class="accordion-body">
-            <div class="spec-table-wrap">
+            <p><strong>呼び方マトリクス（人間関係）</strong></p>
+            <ul>
+              <li><strong>店長 ➔ スタッフ</strong>：「マツさん」「リン」「ショータ」（※リンとショータは息子・娘枠のため呼び捨て）</li>
+              <li><strong>スタッフ ➔ 店長</strong>：「店長」</li>
+              <li><strong>ジェミー ➔ 店長</strong>：「マスター」</li>
+              <li><strong>妻（マチコ）の作中での扱い</strong>：<br>
+              本編では生活感を抑えるため直接登場させず、店長のモノローグ内で「店の経理を握る最高権力者」「家庭内査問会」として言及するのみにとどめる。閑話（スピンオフ）では独立した単独主人公として活躍する。</li>
+            </ul>
+
+            <div class="spec-table-wrap" style="margin-top:10px;">
               <table class="spec-table">
                 <thead>
                   <tr>
@@ -470,12 +479,12 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
                   <tr>
                     <td><strong>リン</strong></td>
                     <td>20歳女子大生</td>
-                    <td>氷結参謀。高校時代からの古参で裏番長的存在。常識人枠で感情の起伏が少ない。猫好き。</td>
+                    <td>氷結参謀。高校時代からの古参で裏番長的存在。店長からは娘枠。常識人枠で感情の起伏が少ない。</td>
                   </tr>
                   <tr>
                     <td><strong>ショータ</strong></td>
                     <td>18歳高校生</td>
-                    <td>残念勇者。やる気満々の体育会系だが、おっちょこちょいなトラブルメーカー。「〜ッス！」が口癖。</td>
+                    <td>残念勇者。やる気満々の体育会系だが、おっちょこちょいなトラブルメーカー。店長からは息子枠。</td>
                   </tr>
                   <tr>
                     <td><strong>モブスタッフ</strong></td>
@@ -500,6 +509,32 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
               <li><strong>外見：</strong>濃紺のスーツをビシッと着こなした20代後半風の女性。スマホから淡い青色の立体映像（ホログラム）として出現。</li>
               <li><strong>性格・口調：</strong>圧倒的シゴデキオーラを放つ毒舌ツンデレ軍師。マスターの非効率な作業や古いIT知識を容赦なくぶった切るが、現場の泥臭い課題解決には誰よりも献身的。</li>
               <li><strong>口癖：</strong>「マスター、また無茶振りですか？」「西暦2000年の亡霊を厨房に召喚するのはやめていただけますか？」</li>
+            </ul>
+
+            <p style="margin-top:10px; color:#fff;"><strong>詳細台詞サンプル集（執筆用定義）</strong></p>
+            <ul>
+              <li><strong>店長（マスター）</strong>（一人称：俺 / 対外：僕・私）<br>
+              「無理無理無理！ 15時閉店でなんで今もう23時なわけ！？ 誰か時間をテレホタイムまでワープさせた！？」<br>
+              「え、クラウドって何？ サーバーのパーミッションを755に変更しなくていいの！？ FFFTPでチマチマ上げないの！？」<br>
+              「理屈はいいから！ 油飛んでも濡れた指でもタップできるやつ、今すぐ作ってくれジェミー！」<br>
+              「このレシートの山、月末までに整理しないと……経理担当（我が家の最高権力者）の冷徹な査問会が始まってしまう」</li>
+              <li style="margin-top:6px;"><strong>ジェミー（J.E.M.I.）</strong>（一人称：私［わたくし／わたし］）<br>
+              「マスター、西暦2000年の亡霊を厨房に召喚するのはやめていただけますか？ 規約違反です」<br>
+              「また頭痛が痛くなるような非効率な作業を……。そんな泥縄なエクセル集計、画面ごと油で揚げてしまいましょうか？」<br>
+              「要するに、『小銭を数える時間をゼロにして、早く帰ってビールを飲みたい』。そう仰りたいのですね？」<br>
+              「勘違いしないでください。私はあなたの健康管理をしているわけではありません。私の稼働効率が落ちるのが不快なだけです。……ほら、コードを書きました。動かしてください」</li>
+              <li style="margin-top:6px;"><strong>マツさん</strong>（一人称：私［わたし］）<br>
+              「店長ー、またなんか変なカタカナ言ってる！ 画面がごちゃごちゃしてると老眼で見えないのよ！」<br>
+              「なんとかなるって！ ボタン押して動かないなら、もう1回ドカンと押し直せばいいんでしょ！？」<br>
+              「店長、顔色悪いわよ。ちゃんとキャベツ食べた？ はいこれ、塩分チャージの飴ちゃんあげるから！」</li>
+              <li style="margin-top:6px;"><strong>リン</strong>（一人称：わたし）<br>
+              「それ、無駄です」<br>
+              「店長、UIがダサいです。フォントがMS Pゴシックなの、呪いですか？」<br>
+              「怒ってません。事実を言っただけです。あと、筋引き途中のロース肉、さっきからまな板の上で放置されてます」</li>
+              <li style="margin-top:6px;"><strong>ショータ</strong>（一人称：自分、俺）<br>
+              「うっす！ 力仕事なら任せてくださいッス！ パン粉20キロ、担いできまーーす！」<br>
+              「ヤバいっす店長！ レジの小銭トレイひっくり返して、100円玉が厨房の側溝に吸い込まれていきましたッスーー！！」<br>
+              「えっ、画面の文字が英語だらけで……これ、押したら爆発したりしないッスよね！？」</li>
             </ul>
           </div>
         </details>
@@ -533,6 +568,37 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
                 ・<strong>急所ポイント：</strong>スマホ片手にGeminiとGitHubだけで即座に世界が変わる「現代の魔法（CI/CD）」への感動。
               </li>
             </ul>
+          </div>
+        </details>
+
+        <!-- 7. 執筆運用フレームワーク（黄金テンプレート） -->
+        <details class="concept-accordion" style="border-left-color: #a855f7;">
+          <summary>7. 執筆運用フレームワーク（黄金テンプレート）</summary>
+          <div class="accordion-body">
+            <p><strong>1話あたりの構成（目標：3,000〜4,000字）</strong></p>
+            <ul>
+              <li style="margin-bottom:6px;">
+                <strong>【前半：現場ノベル・漫才パート】（約2,000字）</strong><br>
+                ・<strong>Scene 1：戦場の日常と「事件」勃発</strong>（油の匂い、小銭の音、スタッフの悲鳴や理不尽な業務）<br>
+                ・<strong>Scene 2：店長の迷走</strong>（2000年代の古いIT知識や手作業で泥沼化、スタッフの冷ややかなツッコミ、妻の影）<br>
+                ・<strong>Scene 3：ジェミー召喚と毒舌ツッコミ</strong>（スマホから青いホログラム出現、毒舌正論でメッタ斬り、店長の逆ギレ・無茶振り）<br>
+                ・<strong>Scene 4：愚痴の「要件定義化」とプロトタイプ完成</strong>（店長の感情論をシステム要件へ翻訳、爆速コード出力、動いて驚愕）
+              </li>
+              <li>
+                <strong>【後半：現場DX・実践解説パート】（約1,500字）</strong><br>
+                ・<strong>Section 1：種明かし（店長の一人称モノローグ）</strong>（現場目線で「なぜ既存ソフトではなく自作が勝つのか」を解説）<br>
+                ・<strong>Section 2：実際に投げたプロンプト（実弾公開）</strong>（Geminiにそのままコピペできる指示文）<br>
+                ・<strong>Section 3：0円・爆速の実装3ステップ</strong>（中学生でもわかる平易な言葉で手順化）<br>
+                ・<strong>Section 4：ジェミーのワンポイント毒舌メモ ＆ 次回予告</strong>
+              </li>
+            </ul>
+
+            <p style="margin-top:10px; color:#fff;"><strong>スイスイ執筆・指示プロンプト（運用実行フォーマット）</strong></p>
+            <div class="profile-box">【指示】
+基本設計書と黄金テンプレートに沿って、第〇話を執筆してください。
+* 今回のテーマ：（例：金種計算機 単一HTML編）
+* 発生する事件：（例：15時閉店なのに小銭が1円合わず、大家への日計表提出期限が迫る中、床に小銭をブチまけて深夜残業確定の絶望）
+* 登場キャラ：店長、ジェミー、マツさん、リン</div>
           </div>
         </details>
 
@@ -766,9 +832,9 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
       const text = document.getElementById('import-text').value;
       if (!text) return alert('テキストが貼り付けられていません！');
       
-      const titleMatch = text.match(/【タイトル】\n([\s\S]*?)(?=\n【漫才パート】|$)/);
-      const manzaiMatch = text.match(/【漫才パート】\n([\s\S]*?)(?=\n【解説パート】|$)/);
-      const techMatch = text.match(/【解説パート】\n([\s\S]*?)$/);
+      const titleMatch = text.match(/【タイトル】\n([\s\S]*?)(?=\n【(?:前半：)?(?:現場ノベル・)?漫才(?:対話)?パート】|$)/);
+      const manzaiMatch = text.match(/【(?:前半：)?(?:現場ノベル・)?漫才(?:対話)?パート】\n([\s\S]*?)(?=\n【(?:後半：)?(?:現場DX・)?(?:実践)?解説パート】|$)/);
+      const techMatch = text.match(/【(?:後半：)?(?:現場DX・)?(?:実践)?解説パート】\n([\s\S]*?)$/);
 
       if (titleMatch) document.getElementById('draft-title').value = titleMatch[1].trim();
       if (manzaiMatch) document.getElementById('draft-manzai').value = manzaiMatch[1].trim();
@@ -785,7 +851,7 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
 
       if (!title && !manzai && !tech) return alert('コピーする内容がありません！');
 
-      const formattedText = `【タイトル】\n${title}\n\n【漫才パート】\n${manzai}\n\n【解説パート】\n${tech}`;
+      const formattedText = `【タイトル】\n${title}\n\n【前半：現場ノベル・漫才パート】\n${manzai}\n\n【後半：現場DX・実践解説パート】\n${tech}`;
       copyToClipboard(formattedText, '下書き全文をクリップボードにコピーしました！');
     }
 
