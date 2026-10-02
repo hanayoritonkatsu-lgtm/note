@@ -202,6 +202,18 @@
       color: var(--text-muted);
       line-height: 1.6;
     }
+    .profile-box {
+      background: #040812;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
     
     .spec-table-wrap { overflow-x: auto; margin-bottom: 12px; }
     table.spec-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #070d18; border-radius: 6px; overflow: hidden; }
@@ -315,17 +327,35 @@
     <div id="tab-settings" class="tab-content">
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h2 style="margin-bottom:0;">📑 プロジェクト基本設計書</h2>
+          <h2 style="margin-bottom:0;">📑 プロジェクト基本設計書（完全統合版）</h2>
           <span style="font-size:0.75rem; color:var(--text-muted);">タイトルをタップして開閉</span>
         </div>
 
-        <!-- 1. 作品基本情報 -->
+        <!-- 1. 作品基本情報・発信体制 -->
         <details class="concept-accordion" style="border-left-color: #38bdf8;">
-          <summary>1. 作品基本情報</summary>
+          <summary>1. 作品基本情報・発信体制</summary>
           <div class="accordion-body">
             <p><strong>作品タイトル：</strong>『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』</p>
-            <p><strong>媒体展開：</strong>note連載（週刊ベース） ➔ 書籍化・商業出版を見据えた企画</p>
+            <p><strong>媒体展開：</strong>note連載（週刊ベース） ＋ X（旧Twitter）連動 ➔ 書籍化・商業出版を見据えた企画</p>
             <p><strong>ジャンル：</strong>実録・現場主義DX奮闘記（ビジネス×ライトノベル風味エッセイ）</p>
+
+            <p style="margin-top:10px; color:#fff;"><strong>発信者・ペルソナ設計（2層構造）</strong></p>
+            <ul>
+              <li><strong>【著者（リアル・発信主体）】：カツカツ店長</strong><br>
+              note・Xで読者や編集者と直接対峙する生身の書き手。現場で泥臭く働く当事者としての信頼感と、再現性のある一次情報ノウハウを届ける。</li>
+              <li><strong>【主人公（作中キャラクター）】：喝活亭の店長（マスター）</strong><br>
+              物語の中でジェミーや現場スタッフとドタバタ劇を繰り広げるフィクションの推進役。</li>
+            </ul>
+
+            <p style="margin-top:10px; color:#fff;"><strong>公式プロフィール文（X・note共通決定稿）</strong></p>
+            <div class="profile-box">カツカツ店長
+
+IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食店を経営。仕込みと雑務に追われながらも、AIを相棒に現場の業務改善ツールを爆速自作中！
+
+📖 note連載中
+『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』
+
+市販の高額SaaSに現場を合わせるな。厨房の悲鳴からツールを自作する「超パーソナル型DX」のリアルをお届けします。</div>
           </div>
         </details>
 
@@ -359,15 +389,23 @@
           <summary>3. 連載構成（三本柱エコシステム）</summary>
           <div class="accordion-body">
             <ul>
-              <li style="margin-bottom: 8px;">
+              <li style="margin-bottom: 10px;">
                 <strong>①【本編】：二段ロケット型ストーリー</strong><br>
                 ・<strong>前半【漫才対話パート】</strong>：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。<br>
                 ・<strong>後半【実践解説パート】</strong>：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。
               </li>
-              <li style="margin-bottom: 8px;">
-                <strong>②【閑話①：妻・マチコのGAS奮闘記】（スピンオフ）</strong><br>
+              <li style="margin-bottom: 10px;">
+                <strong>②【閑話①：妻・マチコのGAS奮闘記】（スピンオフ・全4回完結）</strong><br>
                 ・<strong>タイトル（仮）</strong>：『開発経験ゼロな、アラフィフ超文系キャリアウーマンが始めるGAS入門』<br>
-                ・<strong>テーマ</strong>：大企業勤めの妻・マチコが、進まないDXとAIに二の足を踏む経営陣に辟易としながら、部下の残業を減らしウェルビーイング（笑）を取り戻すため、システム部に怒られない範囲（Google Workspace/GAS）で繰り広げるゲリラ業務改善記。
+                ・<strong>テーマ</strong>：大企業勤めの妻・マチコが、進まないDXとAIに二の足を踏む経営陣に辟易としながら、部下の残業を減らしウェルビーイング（笑）を取り戻すため、システム部に怒られない範囲（Google Workspace/GAS）で繰り広げるゲリラ業務改善記。<br>
+                ・<strong>特別構成（ハイブリッド形式）</strong>：<br>
+                &nbsp;&nbsp;【前半：小説パート】三人称限定視点＋（心の叫び）。「金曜夜の静まり返ったオフィス、青白いPCモニター、工数管理と週報が連携しない怒り」など、中間管理職のリアルな悲哀を描くハードボイルド小説調。<br>
+                &nbsp;&nbsp;【後半：解決・解説パート】一転してジェミーとの掛け合いへ戻り、愚痴をぶつけながら実用的なGASコードと実装手順を手ほどき。<br>
+                ・<strong>全4話ラインナップ</strong>：<br>
+                &nbsp;&nbsp;1. 第1話：スプシとGASでつくる、私だけの秘密基地（マイポータルサイト）<br>
+                &nbsp;&nbsp;2. 第2話：Googleカレンダー連携 ── 「今週何やってたっけ？」からの脱却<br>
+                &nbsp;&nbsp;3. 第3話：Gmail連携 ── 送信履歴に埋もれたタスクをサルベージせよ<br>
+                &nbsp;&nbsp;4. 第4話：総括！ Calendar×Gmail×スプシで錬成する「全自動・週報生成機」
               </li>
               <li>
                 <strong>③【閑話②：ジェミーの優しいぱそこん教室】（初心者救済）</strong><br>
