@@ -89,7 +89,7 @@
       background-color: #162438;
     }
     .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 120px; }
-    .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); }
+    .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); font-weight: bold; }
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
     .item-body { font-size: 0.85rem; color: var(--text-muted); white-space: pre-wrap; }
@@ -245,19 +245,31 @@
         <h2 id="idea-form-title">⚡ クイックネタ投下（D1即時保存）</h2>
         <input type="text" id="idea-title" placeholder="ネタの見出し（例：レジ締め1円合わない事件）">
         <textarea id="idea-body" class="fullscreen-trigger" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('idea-body', '💡 ネタ帳の本文入力')"></textarea>
+        
         <div style="display: flex; gap: 8px;">
-          <select id="idea-category" style="flex: 1;">
-            <option value="店舗本編">店舗本編（飲食店）</option>
-            <option value="オフィス閑話">オフィス閑話（GAS・事務）</option>
-            <option value="技術メモ">技術メモ（Pages/AI活用）</option>
-          </select>
-          <select id="idea-status" style="flex: 1;">
-            <option value="思いつき">思いつき</option>
-            <option value="プロット中">プロット中</option>
-            <option value="執筆中">執筆中</option>
-            <option value="公開済">公開済</option>
-          </select>
+          <!-- 登録用カテゴリ選択 -->
+          <div style="flex: 1;">
+            <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">カテゴリ設定</label>
+            <select id="idea-category">
+              <option value="メインネタ">メインネタ</option>
+              <option value="gasネタ">gasネタ</option>
+              <option value="pc教室ネタ">pc教室ネタ</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <!-- 一覧表示フィルター -->
+          <div style="flex: 1;">
+            <label style="font-size:0.75rem; color:var(--accent); display:block; margin-bottom:4px; font-weight:bold;">🔍 表示絞り込み</label>
+            <select id="idea-filter" onchange="applyIdeaFilter()" style="border-color:var(--accent);">
+              <option value="all">すべて表示</option>
+              <option value="メインネタ">メインネタのみ</option>
+              <option value="gasネタ">gasネタのみ</option>
+              <option value="pc教室ネタ">pc教室ネタのみ</option>
+              <option value="その他">その他のみ</option>
+            </select>
+          </div>
         </div>
+
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
           <button class="btn" id="idea-save-btn" style="flex: 2; min-width: 140px;" onclick="saveIdea()">D1データベースへ送信</button>
           <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportCurrentIdea()">📋 コピー</button>
@@ -530,7 +542,6 @@
     let touchStartY = 0;
 
     window.addEventListener('touchstart', (e) => {
-      // 全画面エディタが開いている時はスワイプ無効
       if (document.getElementById('fs-modal').classList.contains('active')) return;
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
@@ -586,28 +597,45 @@
       try {
         const res = await fetch('/api/ideas');
         const ideas = await res.json();
-        if (!ideas || ideas.length === 0) {
-          list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">ストックされたネタはありません</div>';
-          return;
-        }
-        window._ideaCache = ideas;
-        list.innerHTML = ideas.map(item => `
-          <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
-            <div class="card-actions" onclick="event.stopPropagation()">
-              <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
-              <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
-            </div>
-            <div class="item-header">
-              <span class="item-tag">${escapeHtml(item.category)} | ${escapeHtml(item.status)}</span>
-              <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
-            </div>
-            <div class="item-title">${escapeHtml(item.title)}</div>
-            <div class="item-body">${escapeHtml(item.body || '')}</div>
-          </div>
-        `).join('');
+        window._ideaCache = ideas || [];
+        renderIdeaList();
       } catch (e) {
         list.innerHTML = '<div style="color:#ef4444; font-size:0.85rem;">取得に失敗しました</div>';
       }
+    }
+
+    function renderIdeaList() {
+      const list = document.getElementById('idea-list');
+      const filter = document.getElementById('idea-filter').value;
+      const ideas = window._ideaCache || [];
+
+      const filtered = filter === 'all' 
+        ? ideas 
+        : ideas.filter(item => item.category === filter);
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">該当するネタはありません</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(item => `
+        <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
+            <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
+          </div>
+          <div class="item-header">
+            <span class="item-tag">${escapeHtml(item.category || 'メインネタ')}</span>
+            <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
+          </div>
+          <div class="item-title">${escapeHtml(item.title)}</div>
+          <div class="item-body">${escapeHtml(item.body || '')}</div>
+        </div>
+      `).join('');
+    }
+
+    function applyIdeaFilter() {
+      renderIdeaList();
     }
 
     async function saveIdea() {
@@ -620,7 +648,7 @@
         title,
         body,
         category: document.getElementById('idea-category').value,
-        status: document.getElementById('idea-status').value
+        status: '' // 1つに集約したため空文字
       };
 
       try {
@@ -642,8 +670,7 @@
       currentIdeaId = idea.id;
       document.getElementById('idea-title').value = idea.title;
       document.getElementById('idea-body').value = idea.body || '';
-      document.getElementById('idea-category').value = idea.category;
-      document.getElementById('idea-status').value = idea.status;
+      document.getElementById('idea-category').value = idea.category || 'メインネタ';
 
       document.getElementById('idea-form-title').innerText = '✏️ ネタの編集更新';
       document.getElementById('idea-save-btn').innerText = '変更を更新保存';
@@ -664,18 +691,17 @@
       const title = document.getElementById('idea-title').value.trim();
       const body = document.getElementById('idea-body').value.trim();
       const category = document.getElementById('idea-category').value;
-      const status = document.getElementById('idea-status').value;
 
       if (!title && !body) return alert('コピーするネタがありません！');
 
-      const text = `【ネタ】${title}\n【分類】${category}（${status}）\n\n${body}`;
+      const text = `【ネタ】${title}\n【分類】${category}\n\n${body}`;
       copyToClipboard(text, 'ネタの内容をクリップボードにコピーしました！');
     }
 
     function copyIdeaItem(id) {
       const idea = (window._ideaCache || []).find(i => i.id === id);
       if (!idea) return;
-      const text = `【ネタ】${idea.title}\n【分類】${idea.category}（${idea.status}）\n\n${idea.body || ''}`;
+      const text = `【ネタ】${idea.title}\n【分類】${idea.category || 'メインネタ'}\n\n${idea.body || ''}`;
       copyToClipboard(text, 'ネタの内容をクリップボードにコピーしました！');
     }
 
@@ -706,7 +732,7 @@
       if (techMatch) document.getElementById('draft-tech').value = techMatch[1].trim();
       
       document.getElementById('import-text').value = '';
-      alert('各入力欄に振り分けました！');
+      alert('各項目に振り分けました！');
     }
 
     function exportDraft() {
