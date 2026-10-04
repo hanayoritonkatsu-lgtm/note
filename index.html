@@ -90,7 +90,19 @@
     .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); font-weight: bold; }
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
-    .item-body { font-size: 0.85rem; color: var(--text-muted); white-space: pre-wrap; }
+
+    /* 本文は最大3行で省略（末尾を「…」にする） */
+    .item-body { 
+      font-size: 0.85rem; 
+      color: var(--text-muted); 
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-all;
+    }
     
     .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 2; }
     .action-btn { background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; }
@@ -747,7 +759,7 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
       document.getElementById('idea-body').value = idea.body || '';
       document.getElementById('idea-category').value = idea.category || 'メインネタ';
 
-      document.getElementById('idea-form-title').innerText = '✏️️ ネタの編集更新';
+      document.getElementById('idea-form-title').innerText = '✏️ ネタの編集更新';
       document.getElementById('idea-save-btn').innerText = '変更を更新保存';
       document.getElementById('idea-cancel-btn').style.display = 'inline-block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
