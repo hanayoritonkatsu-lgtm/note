@@ -227,14 +227,17 @@
     details.concept-accordion[open] summary::after {
       transform: rotate(180deg);
     }
+    
+    /* アコーディオン本文：文字色をクッキリ白系(#f1f5f9)に変更 */
     .accordion-body {
       margin-top: 10px;
       padding-top: 8px;
       border-top: 1px dashed var(--border);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.6;
+      font-size: 0.9rem;
+      color: #f1f5f9;
+      line-height: 1.7;
       white-space: pre-wrap;
+      word-break: break-word;
     }
   </style>
 </head>
@@ -340,7 +343,7 @@
       <!-- インポート＆エクスポート操作パネル -->
       <div class="card" style="border-color: #38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <h2 style="margin-bottom:0;">⚙️️ 設計書の管理・更新</h2>
+          <h2 style="margin-bottom:0;">⚙️ 設計書の管理・更新</h2>
           <button class="btn" style="width:auto; padding:6px 12px; font-size:0.8rem; background:#059669; color:#fff;" onclick="exportSettings()">📋 全文コピー</button>
         </div>
         
@@ -710,7 +713,6 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
     // --- ネタ帳機能 ---
     let currentIdeaId = null;
 
-    // カテゴリに応じた網掛けクラスを判定
     function getCategoryTagClass(category) {
       switch (category) {
         case 'メインネタ':
