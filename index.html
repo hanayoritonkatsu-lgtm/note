@@ -87,7 +87,39 @@
       background-color: #162438;
     }
     .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 120px; }
-    .item-tag { font-size: 0.75rem; background: var(--tag-bg); padding: 2px 8px; border-radius: 4px; color: var(--accent); font-weight: bold; }
+    
+    /* カテゴリタグ基本スタイル */
+    .item-tag { 
+      font-size: 0.75rem; 
+      padding: 3px 9px; 
+      border-radius: 4px; 
+      font-weight: bold; 
+      display: inline-block;
+      letter-spacing: 0.02em;
+    }
+
+    /* カテゴリ別の網掛けカラー */
+    .item-tag.tag-main {
+      background-color: rgba(14, 165, 233, 0.2);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+    .item-tag.tag-gas {
+      background-color: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.4);
+    }
+    .item-tag.tag-pc {
+      background-color: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border: 1px solid rgba(192, 132, 252, 0.4);
+    }
+    .item-tag.tag-other {
+      background-color: rgba(148, 163, 184, 0.15);
+      color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
 
@@ -308,7 +340,7 @@
       <!-- インポート＆エクスポート操作パネル -->
       <div class="card" style="border-color: #38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <h2 style="margin-bottom:0;">⚙️ 設計書の管理・更新</h2>
+          <h2 style="margin-bottom:0;">⚙️️ 設計書の管理・更新</h2>
           <button class="btn" style="width:auto; padding:6px 12px; font-size:0.8rem; background:#059669; color:#fff;" onclick="exportSettings()">📋 全文コピー</button>
         </div>
         
@@ -678,6 +710,20 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
     // --- ネタ帳機能 ---
     let currentIdeaId = null;
 
+    // カテゴリに応じた網掛けクラスを判定
+    function getCategoryTagClass(category) {
+      switch (category) {
+        case 'メインネタ':
+          return 'tag-main';
+        case 'gasネタ':
+          return 'tag-gas';
+        case 'pc教室ネタ':
+          return 'tag-pc';
+        default:
+          return 'tag-other';
+      }
+    }
+
     async function fetchIdeas() {
       const list = document.getElementById('idea-list');
       list.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem;">D1と通信中...</div>';
@@ -705,20 +751,25 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
         return;
       }
 
-      list.innerHTML = filtered.map(item => `
-        <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
-          <div class="card-actions" onclick="event.stopPropagation()">
-            <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
-            <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
+      list.innerHTML = filtered.map(item => {
+        const cat = item.category || 'その他';
+        const tagClass = getCategoryTagClass(cat);
+
+        return `
+          <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
+            <div class="card-actions" onclick="event.stopPropagation()">
+              <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
+              <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
+            </div>
+            <div class="item-header">
+              <span class="item-tag ${tagClass}">${escapeHtml(cat)}</span>
+              <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
+            </div>
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-body">${escapeHtml(item.body || '')}</div>
           </div>
-          <div class="item-header">
-            <span class="item-tag">${escapeHtml(item.category || 'メインネタ')}</span>
-            <span class="item-date">${new Date(item.created_at).toLocaleDateString('ja-JP')}</span>
-          </div>
-          <div class="item-title">${escapeHtml(item.title)}</div>
-          <div class="item-body">${escapeHtml(item.body || '')}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function applyIdeaFilter() {
