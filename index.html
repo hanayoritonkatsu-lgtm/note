@@ -306,10 +306,7 @@
             AIから出力された「### 見出し」区切りのテキストをそのまま貼り付けて保存すると、アコーディオンが即時更新されます。
           </p>
           <textarea id="settings-import-text" class="fullscreen-trigger" style="min-height:120px; margin-top:8px;" placeholder="ここに設計書テキストを貼り付けてください" onclick="openFullscreenEditor('settings-import-text', '⚙️ 設計書の一括編集・取り込み')"></textarea>
-          <div style="display:flex; gap:8px;">
-            <button class="btn" style="flex:2;" onclick="importSettings()">インポートして保存</button>
-            <button class="btn-secondary" style="flex:1;" onclick="resetSettingsDefault()">初期値に戻す</button>
-          </div>
+          <button class="btn" onclick="importSettings()">インポートして保存</button>
         </details>
       </div>
 
@@ -666,12 +663,6 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
       copyToClipboard(rawText, '設計書の全文テキストをクリップボードにコピーしました！');
     }
 
-    function resetSettingsDefault() {
-      if (!confirm('設計書を初期状態（完全統合・最終決定版）に戻しますか？')) return;
-      document.getElementById('settings-import-text').value = DEFAULT_SETTINGS_TEXT;
-      importSettings();
-    }
-
     // --- ネタ帳機能 ---
     let currentIdeaId = null;
 
@@ -756,7 +747,7 @@ DX（デジタルトランスフォーメーション）とは、大企業が億
       document.getElementById('idea-body').value = idea.body || '';
       document.getElementById('idea-category').value = idea.category || 'メインネタ';
 
-      document.getElementById('idea-form-title').innerText = '✏️ ネタの編集更新';
+      document.getElementById('idea-form-title').innerText = '✏️️ ネタの編集更新';
       document.getElementById('idea-save-btn').innerText = '変更を更新保存';
       document.getElementById('idea-cancel-btn').style.display = 'inline-block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
