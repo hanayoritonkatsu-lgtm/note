@@ -23,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding-bottom: 60px; overscroll-behavior-y: contain; }
 
-    /* スプラッシュ画面スタイル */
+    /* スプラッシュ画面 */
     #splash-screen {
       position: fixed;
       top: 0;
@@ -63,7 +63,6 @@
     .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--accent); }
     input, textarea, select { width: 100%; background: #0b0f19; border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 0.95rem; }
     
-    /* リサイズドラッグによる誤操作・更新を防ぐため resize:none */
     textarea { resize: none; min-height: 80px; }
     .fullscreen-trigger { cursor: pointer; }
     .fullscreen-trigger:focus { border-color: var(--accent); outline: none; }
@@ -74,7 +73,6 @@
     button.btn-secondary:hover { background: #64748b; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
     
-    /* カード共通スタイル（クリッカブル） */
     .item-card { 
       background: #131d2e; 
       border: 1px solid var(--border); 
@@ -152,7 +150,7 @@
       margin-bottom: 0;
     }
 
-    /* 設計書用コンポーネント（アコーディオン） */
+    /* 設定アコーディオン */
     details.concept-accordion {
       background: #0b1324;
       border-left: 4px solid var(--accent);
@@ -189,49 +187,11 @@
       margin-top: 10px;
       padding-top: 8px;
       border-top: 1px dashed var(--border);
-    }
-    .accordion-body p {
       font-size: 0.85rem;
       color: var(--text-muted);
-      line-height: 1.6;
-      margin-bottom: 6px;
-    }
-    .accordion-body ul {
-      margin-left: 18px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-    .statement-box {
-      background: #030712;
-      border: 1px solid #1e3a8a;
-      border-left: 4px solid #38bdf8;
-      border-radius: 6px;
-      padding: 12px;
-      margin-bottom: 12px;
-      color: #f1f5f9;
-      font-size: 0.88rem;
-      line-height: 1.7;
-    }
-    .profile-box {
-      background: #040812;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px;
-      margin-top: 8px;
-      font-family: inherit;
-      font-size: 0.85rem;
-      color: #e2e8f0;
       line-height: 1.6;
       white-space: pre-wrap;
     }
-    
-    .spec-table-wrap { overflow-x: auto; margin-bottom: 12px; }
-    table.spec-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: #070d18; border-radius: 6px; overflow: hidden; }
-    table.spec-table th, table.spec-table td { padding: 8px 10px; border: 1px solid var(--border); text-align: left; }
-    table.spec-table th { background: #1a273e; color: var(--accent); font-weight: bold; white-space: nowrap; }
-    table.spec-table td { color: var(--text-muted); }
-    table.spec-table td strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -270,7 +230,6 @@
         <textarea id="idea-body" class="fullscreen-trigger" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('idea-body', '💡 ネタ帳の本文入力')"></textarea>
         
         <div style="display: flex; gap: 8px;">
-          <!-- 登録用カテゴリ選択 -->
           <div style="flex: 1;">
             <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">カテゴリ設定</label>
             <select id="idea-category">
@@ -280,7 +239,6 @@
               <option value="その他">その他</option>
             </select>
           </div>
-          <!-- 一覧表示フィルター -->
           <div style="flex: 1;">
             <label style="font-size:0.75rem; color:var(--accent); display:block; margin-bottom:4px; font-weight:bold;">🔍 表示絞り込み</label>
             <select id="idea-filter" onchange="applyIdeaFilter()" style="border-color:var(--accent);">
@@ -308,7 +266,6 @@
 
     <!-- タブ2: 執筆・プロット -->
     <div id="tab-editor" class="tab-content">
-      <!-- AIプロット一括取り込み機能 -->
       <details style="margin-bottom:16px; background:#131d2e; padding:10px; border-radius:6px; border:1px solid var(--border);">
         <summary style="cursor:pointer; font-weight:bold; color:#10b981;">🤖 AIプロット一括取り込み（ここをクリック）</summary>
         <textarea id="import-text" placeholder="ここにジェミーが作った専用テキストをまるごと貼り付けてください" style="min-height:100px; margin-top:10px;"></textarea>
@@ -336,296 +293,33 @@
 
     <!-- タブ3: 設定 -->
     <div id="tab-settings" class="tab-content">
+      <!-- インポート＆エクスポート操作パネル -->
+      <div class="card" style="border-color: #38bdf8;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h2 style="margin-bottom:0;">⚙️ 設計書の管理・更新</h2>
+          <button class="btn" style="width:auto; padding:6px 12px; font-size:0.8rem; background:#059669; color:#fff;" onclick="exportSettings()">📋 全文コピー</button>
+        </div>
+        
+        <details style="background:#131d2e; padding:10px; border-radius:6px; border:1px solid var(--border);">
+          <summary style="cursor:pointer; font-weight:bold; color:var(--accent); font-size:0.9rem;">🤖 設計書の一括取り込み・更新（ここをクリック）</summary>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
+            AIから出力された「### 見出し」区切りのテキストをそのまま貼り付けて保存すると、アコーディオンが即時更新されます。
+          </p>
+          <textarea id="settings-import-text" class="fullscreen-trigger" style="min-height:120px; margin-top:8px;" placeholder="ここに設計書テキストを貼り付けてください" onclick="openFullscreenEditor('settings-import-text', '⚙️ 設計書の一括編集・取り込み')"></textarea>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" style="flex:2;" onclick="importSettings()">インポートして保存</button>
+            <button class="btn-secondary" style="flex:1;" onclick="resetSettingsDefault()">初期値に戻す</button>
+          </div>
+        </details>
+      </div>
+
+      <!-- 動的に描画される設計書アコーディオン -->
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <h2 style="margin-bottom:0;">📑 プロジェクト基本設計書（完全統合・最終決定版）</h2>
+          <h2 style="margin-bottom:0;" id="settings-rendered-title">📑 プロジェクト基本設計書</h2>
           <span style="font-size:0.75rem; color:var(--text-muted);">タイトルをタップして開閉</span>
         </div>
-
-        <!-- 1. 作品基本情報・発信体制 -->
-        <details class="concept-accordion" style="border-left-color: #38bdf8;">
-          <summary>1. 作品基本情報・発信体制</summary>
-          <div class="accordion-body">
-            <p><strong>作品タイトル：</strong>『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』</p>
-            <p><strong>媒体展開：</strong>note連載（週刊ベース） ＋ X（旧Twitter）連動 ➔ 書籍化・商業出版を見据えた企画</p>
-            <p><strong>ジャンル：</strong>実録・現場主義DX奮闘記（ビジネス×ライトノベル風味エッセイ）</p>
-
-            <p style="margin-top:10px; color:#fff;"><strong>発信者・ペルソナ設計（2層構造）</strong></p>
-            <ul>
-              <li><strong>【著者（リアル・発信主体）】：カツカツ店長</strong><br>
-              note・Xで読者や編集者と直接対峙する生身の書き手。現場で泥臭く働く当事者としての信頼感と、再現性のある一次情報ノウハウを届ける。</li>
-              <li><strong>【主人公（作中キャラクター）】：喝活亭の店長（マスター）</strong><br>
-              物語の中でジェミーや現場スタッフとドタバタ劇を繰り広げるフィクションの推進役。</li>
-            </ul>
-
-            <p style="margin-top:10px; color:#fff;"><strong>公式プロフィール文（X・note共通決定稿）</strong></p>
-            <div class="profile-box">カツカツ店長
-
-IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食店を経営。仕込みと雑務に追われながらも、AIを相棒に現場の業務改善ツールを爆速自作中！
-
-📖 note連載中
-『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』
-
-市販の高額SaaSに現場を合わせるな。厨房の悲鳴からツールを自作する「超パーソナル型DX」のリアルをお届けします。</div>
-          </div>
-        </details>
-
-        <!-- 2. 本書の思い・主題 -->
-        <details class="concept-accordion" style="border-left-color: #eab308;">
-          <summary>2. 本書の思い・主題（読者に届けるコアメッセージ）</summary>
-          <div class="accordion-body">
-            <div class="statement-box">
-              <strong style="color:#38bdf8;">【魂のステートメント】</strong><br>
-              <strong>DX（デジタルトランスフォーメーション）とは、大企業が億単位の予算をかけて高額なSaaSをぶち込むことだけではない！</strong><br><br>
-              <strong>個人でも、自分に合った、自分だけにフォーカスされた、自分専用のDXが、お金と時間をかけずにできる時代になった。</strong>
-            </div>
-
-            <p style="color:#fff;"><strong>コアメッセージ・4つの柱</strong></p>
-            <ul>
-              <li style="margin-bottom: 8px;">
-                <strong>「知識があるからこそ諦めていた」過去の絶望を覆す</strong><br>
-                昔取った杵柄（LAMP環境、Linux、Apache、MySQL、自宅・店内Webサーバー）があるからこそ、環境構築だけで膨大な時間が溶ける現実を知っている。「ランチ営業と仕込みで手一杯な個人店主に、そんな時間は1ミリもない」と諦めていた。<br>
-                その「知識の壁」と「諦め」を、AI（Antigravity、Gemini、Cloudflare Pages、GitHub）が根底から覆した。サーバー構築もコマンドも不要。数分で動くものが目の前に現れる衝撃を届ける。
-              </li>
-              <li style="margin-bottom: 8px;">
-                <strong>「属人化するな」という社畜時代の呪縛をぶち破れ</strong><br>
-                大企業のシステム部門は「属人化の排除」「マニュアル化」「誰でも使える汎用性」を叫ぶ。だが、個人事業主や小規模チームにとって、そんなものは知ったことではない。<br>
-                <strong>「属人化？ 大いに結構！ 俺が使いやすければ、俺専用の歪なツールで100点満点だ」</strong>。<br>
-                メンテ不能で放置されたエクセルマクロの悪夢を恐れる必要はない。動かなくなったら、またGeminiに聞いて直させればいいだけ。修正コストがゼロの時代に、汎用性という名の妥協は不要。
-              </li>
-              <li style="margin-bottom: 8px;">
-                <strong>AIを「話し相手」から「最強の専属プログラマー」へ</strong><br>
-                最初は壁打ち、調べ物、人生相談の相手でしかなかったAI。しかし、一歩踏み込んで実務の泥臭い課題を投げた瞬間、AIは「血の通った実用ツールを即座に錬成するチート軍師」へと化けた。<br>
-                「こんなことAIにできるわけがない」というタガが外れた瞬間、世界が変わる。現場の課題に寄り添えない市販のしょっぱいソフト屋は、本当に生き残れない時代が来た。
-              </li>
-              <li style="margin-bottom: 8px;">
-                <strong>個人事業主・零細企業への魂のエール</strong><br>
-                「市販のシステムは高すぎる」「帯に短し襷に長し」「無料アプリは連携できない」。そんな現場の悲鳴をそのままAIにぶつけてほしい。<br>
-                要件定義なんて小難しい言葉はいらない。言葉に詰まるなら、<strong>「手書きの日計表や、散らかった厨房の写真をそのまま貼り付けて『なんとかして』と叫べばいい」</strong>。<br>
-                Geminiは絶対に「できません」とは言わない。「だいたいできますよ」と、泥臭い現場に寄り添う手段を提示してくれる。まずやってみよう。自分専用のDXは、スマホ片手の一言から始まる。
-              </li>
-              <li>
-                <strong>【最終回の大伏線（エモい種明かし）】</strong><br>
-                「このnote連載自体が、厨房の仕込みの合間にゼロから自作したCloudflare＋AIの『超パーソナル型DX（執筆作戦指令室）』によって爆速で生み出された最大の成果物だった」という真実で物語を締めくくる。
-              </li>
-            </ul>
-          </div>
-        </details>
-
-        <!-- 3. 連載構成 -->
-        <details class="concept-accordion" style="border-left-color: #10b981;">
-          <summary>3. 連載構成（三本柱エコシステム）</summary>
-          <div class="accordion-body">
-            <ul>
-              <li style="margin-bottom: 10px;">
-                <strong>①【本編】：二段ロケット型ストーリー</strong><br>
-                ・<strong>前半【現場ノベル・漫才パート】</strong>：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。<br>
-                ・<strong>後半【現場DX・実践解説パート】</strong>：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。<br>
-                ・<strong>専門用語の処理方針</strong>：巻末の用語集は置かず、本文の会話内でジェミーが身近な例え（陳列棚、のり弁当等）で1行ツッコミを入れて即座に回収する。
-              </li>
-              <li style="margin-bottom: 10px;">
-                <strong>②【閑話①：妻・マチコのGAS奮闘記】（スピンオフ・全4回完結）</strong><br>
-                ・<strong>タイトル（仮）</strong>：『開発経験ゼロな、アラフィフ超文系キャリアウーマンが始めるGAS入門』<br>
-                ・<strong>テーマ</strong>：大企業勤めの妻・マチコが、進まないDXとAIに二の足を踏む経営陣に辟易としながら、部下の残業を減らしウェルビーイング（笑）を取り戻すため、システム部に怒られない範囲（Google Workspace/GAS）で繰り広げるゲリラ業務改善記。<br>
-                ・<strong>特別構成（ハイブリッド形式）</strong>：<br>
-                &nbsp;&nbsp;【前半：小説パート】三人称限定視点＋（心の叫び）。大企業のリアルな悲哀を描くハードボイルド小説調。<br>
-                &nbsp;&nbsp;【後半：解決・解説パート】一転してジェミーとの掛け合いへ戻り、実用的なGASコードと実装手順を手ほどき。<br>
-                ・<strong>全4話ラインナップ</strong>：<br>
-                &nbsp;&nbsp;1. 第1話：スプシとGASでつくる、私だけの秘密基地（マイポータルサイト）<br>
-                &nbsp;&nbsp;2. 第2話：Googleカレンダー連携 ── 「今週何やってたっけ？」からの脱却<br>
-                &nbsp;&nbsp;3. 第3話：Gmail連携 ── 送信履歴に埋もれたタスクをサルベージせよ<br>
-                &nbsp;&nbsp;4. 第4話：総括！ Calendar×Gmail×スプシで錬成する「全自動・週報生成機」
-              </li>
-              <li>
-                <strong>③【閑話②：ジェミーの優しいぱそこん教室】（初心者救済・不定期）</strong><br>
-                ・<strong>テーマ</strong>：本編に出てきたIT概念を、ジェミーがちょっぴり上から目線で噛み砕いて解説する補習コーナー。
-              </li>
-            </ul>
-          </div>
-        </details>
-
-        <!-- 4. 舞台・店舗設定 -->
-        <details class="concept-accordion" style="border-left-color: #ec4899;">
-          <summary>4. 舞台・店舗設定</summary>
-          <div class="accordion-body">
-            <p><strong>店名：喝活亭（かつかてい）</strong><br>
-            <span style="font-size:0.8rem; color:var(--text-muted);">由来：喝入れて活！ 好きすぎて滅！ 漢字で書くといかつい名前だが、カタカナにすると「カツカツ」。いつも何かに追われている店長らしい名前。</span></p>
-            <p style="margin-top:6px;"><strong>業態：</strong>道の駅（農産物直売所）に併設された、とんかつ定食屋</p>
-            <p><strong>営業時間：</strong>11:00〜15:00（ランチ限定・4時間一本勝負） / <strong>定休日：</strong>火曜日</p>
-            <p style="margin-top:6px; color:#fff;"><strong>店舗のリアルな制約・あるある：</strong></p>
-            <ul>
-              <li><strong>「4時間の濃縮バトル」：</strong>ディナー営業がないため、昼の2〜3回転が全て。レジ詰まりやオーダー遅延が即、致命傷になる。</li>
-              <li><strong>「15時閉店なのに帰れない」：</strong>油の濾過、床掃除、パン粉の片付け、肉の筋引き・仕込み、そして大家である管理事務所への売上報告書作成で、気づけば深夜。</li>
-              <li><strong>「大家（道の駅事務所）への売上報告」：</strong>毎日の日計表提出が義務付けられており、1円でもズレると翌朝の追及対象になる。</li>
-              <li><strong>「現金率が異常に高い」：</strong>直売所で買い物した地元のお年寄りや観光客が多く、小銭が大量に動く（＝金種計算機の切実さ）。</li>
-            </ul>
-          </div>
-        </details>
-
-        <!-- 5. 登場キャラクター設定・人間関係 -->
-        <details class="concept-accordion" style="border-left-color: #6366f1;">
-          <summary>5. 登場キャラクター設定・人間関係</summary>
-          <div class="accordion-body">
-            <p><strong>呼び方マトリクス</strong></p>
-            <ul>
-              <li><strong>店長 ➔ スタッフ</strong>：「マツさん」「リン」「ショータ」（※リンとショータは息子・娘枠のため呼び捨て）</li>
-              <li><strong>スタッフ ➔ 店長</strong>：「店長」</li>
-              <li><strong>ジェミー ➔ 店長</strong>：「マスター」</li>
-              <li><strong>妻（マチコ）の作中での扱い</strong>：<br>
-              本編では生活感を抑えるため直接登場させず、店長のモノローグ内で「店の経理を握る最高権力者」「家庭内査問会」として言及するのみにとどめる。閑話（スピンオフ）では独立した単独主人公として活躍する。</li>
-            </ul>
-
-            <div class="spec-table-wrap" style="margin-top:10px;">
-              <table class="spec-table">
-                <thead>
-                  <tr>
-                    <th>キャラクター名</th>
-                    <th>役割 / 属性</th>
-                    <th>主な特徴・設定</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>店長（マスター）</strong></td>
-                    <td>主人公<br>（40代後半・既婚）</td>
-                    <td>氷河期世代の元社畜。知識が西暦2000年（テレホマン時代）で停止しているが、現場改善の意欲と熱意は高い。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>ジェミー（J.E.M.I.）</strong></td>
-                    <td>作中AIキャラクター</td>
-                    <td>濃紺スーツの毒舌ツンデレ軍師。マスターの古い知識を叩き斬りつつ、現場目線の開発を献身的にサポートする。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>妻（マチコ）</strong></td>
-                    <td>閑話主人公<br>（アラフィフ）</td>
-                    <td>大手企業勤務の超文系キャリアウーマン。現場思いのリアリストで、GASを用いた社内ゲリラDXを展開する。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>マツさん</strong></td>
-                    <td>50代主婦パート</td>
-                    <td>パワー系重戦士。「なんとかなるよ！」が口癖。スマホの細かい操作や複雑な手順が大嫌い。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>リン</strong></td>
-                    <td>20歳女子大生</td>
-                    <td>氷結参謀。高校時代からの古参で裏番長的存在。店長からは娘枠。常識人枠で感情の起伏が少ない。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>ショータ</strong></td>
-                    <td>18歳高校生</td>
-                    <td>残念勇者。やる気満々の体育会系だが、おっちょこちょいなトラブルメーカー。店長からは息子枠。</td>
-                  </tr>
-                  <tr>
-                    <td><strong>モブスタッフ</strong></td>
-                    <td>主婦・学生パート（4名）</td>
-                    <td>シフト調整や急な欠勤など、日常的な店舗管理の課題を象徴する存在。</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </details>
-
-        <!-- 6. 店長の2000年代ボケ語録・回想ライブラリ -->
-        <details class="concept-accordion" style="border-left-color: #f97316;">
-          <summary>6. 店長の2000年代ボケ語録・回想ライブラリ（執筆辞書）</summary>
-          <div class="accordion-body">
-            <p>AI執筆時に指定して呼び出せる、店長の武器（ボケネタ）一覧。</p>
-            <ul>
-              <li style="margin-bottom:8px;">
-                <strong>回線・ハードウェア編</strong><br>
-                ・<strong>アナログモデム</strong>：「ピーヒョロロロ……ガガガッ！」の接続儀式。<br>
-                ・<strong>テレホーダイ</strong>：23時（テレホタイム）になった瞬間に回線が一斉に重くなる狂気。<br>
-                ・<strong>Gateway Solo 3400</strong>：ドッキングステーションをガシャコンと合体させる男のロマン。<br>
-                ・<strong>PCカードスロット＆AirH"（エアエッジ）</strong>：薄型ノートの横っ腹にアンテナ付きカードを挿し、32k/64k/128kでドヤ顔したモバイル戦士の記憶。<br>
-                ・<strong>フロッピーディスク（2HD）</strong>：1.44MBの限界。
-              </li>
-              <li style="margin-bottom:8px;">
-                <strong>開発・社畜トラウマ編</strong><br>
-                ・<strong>FFFTP ＆ パーミッション</strong>：CGIが動かず「パーミッション755」に頭を抱える。<br>
-                ・<strong>マーキータグ（<code>&lt;marquee&gt;</code>）</strong>：文字を左右に流すおもてなし。<br>
-                ・<strong>アクセスカウンター＆キリ番</strong>：7777ゲット、足跡帳カキコ、踏み逃げ厳禁。<br>
-                ・<strong>完全図解Excel97の万年カレンダー</strong>：関数を駆使して苦労して作り、二度と開かなかった苦い思い出（定休日カレンダー回用）。<br>
-                ・<strong>マクロ組んだ人の異動</strong>：属人化してブラックボックス化する恐怖。<br>
-                ・<strong>秀丸エディタ</strong>：使っているだけで「デキる人」に見えた時代。
-              </li>
-              <li>
-                <strong>Webサービス・カルチャー編</strong><br>
-                ・<strong>ジオシティーズ</strong>：俺たちの青春の故郷。<br>
-                ・<strong>Yahoo!JAPAN登録申請</strong>：ディレクトリ型審査待ちの緊張感。<br>
-                ・<strong>FLASHサイト</strong>：オープニングスキップボタン（Enter）の美学。<br>
-                ・<strong>忍者ツールズ</strong>：アクセス解析の忍者カウンター（※現在も元気に存命中のため愛とリスペクトを込めて言及し、ジェミーに突っ込まれる）。<br>
-                ・<strong>Officeアシスタントのイルカ（カッパー君）</strong>：「お前を消す方法」と検索されまくったトラウマ（ジェミーとの対比ネタ）。<br>
-                ・<strong>IE6の悪夢</strong>：CSSレイアウト崩れに怯える亡霊。
-              </li>
-            </ul>
-          </div>
-        </details>
-
-        <!-- 7. 技術＆エピソードのステップアップ計画 -->
-        <details class="concept-accordion" style="border-left-color: #14b8a6;">
-          <summary>7. 技術＆エピソードのステップアップ計画</summary>
-          <div class="accordion-body">
-            <ul>
-              <li style="margin-bottom: 8px;">
-                <strong>第1幕：原点（店長 × ジェミー）</strong><br>
-                ・<strong>導入技術：</strong>Gemini単体 ＋ 単一HTMLファイル（PCローカルで開くだけ）<br>
-                ・<strong>テーマ：</strong>まずは自分一人の作業効率化からスタート。ローカル環境での即効性を検証。
-              </li>
-              <li style="margin-bottom: 8px;">
-                <strong>第2幕：現場の壁とクラウド化（マツさん登場）</strong><br>
-                ・<strong>導入技術：</strong>Cloudflare Pages（Web公開・スマホから即アクセス）<br>
-                ・<strong>テーマ：</strong>現場スタッフへの展開と「使いづらい」の反発。Web化によるアクセシビリティ向上。<br>
-                ・<strong>急所ポイント：</strong>ネット記事のUIが古くて役に立たず、「画面スクショ丸投げ」で突破するエピソード。
-              </li>
-              <li style="margin-bottom: 8px;">
-                <strong>第3幕：見た目のプロ化と現場UX（リン＆ショータ合流）</strong><br>
-                ・<strong>導入技術：</strong>UIフレームワーク／Tailwind／Antigravity／PWA化<br>
-                ・<strong>テーマ：</strong>若手スタッフの巻き込みとUI/UXの劇的改善。アプリ感覚で使える操作性の追求。<br>
-                ・<strong>急所ポイント：</strong>英語だらけのAntigravityへの恐怖と、職人の道具として使いこなすブレイクスルー。
-              </li>
-              <li>
-                <strong>第4幕：本格運用と基地の完成</strong><br>
-                ・<strong>導入技術：</strong>GitHub連携・Cloudflare D1（データベース）・Cloudflare Zero Trust（認証）<br>
-                ・<strong>テーマ：</strong>データの永続化とセキュリティの確保。持続可能な店舗インフラの確立。<br>
-                ・<strong>急所ポイント：</strong>スマホ片手にGeminiとGitHubだけで即座に世界が変わる「現代の魔法（CI/CD）」への感動。
-              </li>
-            </ul>
-          </div>
-        </details>
-
-        <!-- 8. 執筆運用フレームワーク（黄金テンプレート） -->
-        <details class="concept-accordion" style="border-left-color: #a855f7;">
-          <summary>8. 執筆運用フレームワーク（黄金テンプレート）</summary>
-          <div class="accordion-body">
-            <p><strong>1話あたりの構成（目標：3,000〜4,000字）</strong></p>
-            <ul>
-              <li style="margin-bottom:6px;">
-                <strong>【前半：現場ノベル・漫才パート】（約2,000字）</strong><br>
-                ・<strong>Scene 1：戦場の日常と「事件」勃発</strong>（油の匂い、小銭の音、スタッフの悲鳴や理不尽な業務）<br>
-                ・<strong>Scene 2：店長の迷走</strong>（2000年代の古いIT知識や手作業で泥沼化、スタッフの冷ややかなツッコミ、妻の影）<br>
-                ・<strong>Scene 3：ジェミー召喚と毒舌ツッコミ</strong>（スマホから青いホログラム出現、毒舌正論でメッタ斬り、店長の逆ギレ・無茶振り）<br>
-                ・<strong>Scene 4：愚痴の「要件定義化」とプロトタイプ完成</strong>（店長の感情論をシステム要件へ翻訳、爆速コード出力、動いて驚愕）
-              </li>
-              <li>
-                <strong>【後半：現場DX・実践解説パート】（約1,500字）</strong><br>
-                ・<strong>Section 1：種明かし（店長の一人称モノローグ）</strong>（現場目線で「なぜ既存ソフトではなく自作が勝つのか」を解説）<br>
-                ・<strong>Section 2：実際に投げたプロンプト（実弾公開）</strong>（Geminiにそのままコピペできる指示文）<br>
-                ・<strong>Section 3：0円・爆速の実装3ステップ</strong>（中学生でもわかる平易な言葉で手順化）<br>
-                ・<strong>Section 4：ジェミーのワンポイント毒舌メモ ＆ 次回予告</strong>
-              </li>
-            </ul>
-
-            <p style="margin-top:10px; color:#fff;"><strong>スイスイ執筆・指示プロンプト（運用実行フォーマット）</strong></p>
-            <div class="profile-box">【指示】
-基本設計書と黄金テンプレートに沿って、第〇話を執筆してください。
-* 今回のテーマ：（例：金種計算機 単一HTML編）
-* 発生する事件：（例：15時閉店なのに小銭が1円合わず、大家への日計表提出期限が迫る中、床に小銭をブチまけて深夜残業確定の絶望）
-* 登場キャラ：店長、ジェミー、マツさん、リン
-* 差し込むボケ：（例：Gateway Solo3400、イルカ、忍者ツールズ）</div>
-          </div>
-        </details>
-
+        <div id="settings-accordion-container"></div>
       </div>
     </div>
   </div>
@@ -633,6 +327,173 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
   <script>
     const TABS = ['tab-ideas', 'tab-editor', 'tab-settings'];
 
+    // --- デフォルトのプロジェクト基本設計書（完全統合・最終決定版） ---
+    const DEFAULT_SETTINGS_TEXT = `# プロジェクト基本設計書（完全統合・最終決定版）
+
+### 1. 作品基本情報・発信体制
+* 作品タイトル：『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』
+* 媒体展開：note連載（週刊ベース） ＋ X（旧Twitter）連動 ➔ 書籍化・商業出版を見据えた企画
+* ジャンル：実録・現場主義DX奮闘記（ビジネス×ライトノベル風味エッセイ）
+
+【発信者・ペルソナ設計（2層構造）】
+* 【著者（リアル・発信主体）】：カツカツ店長
+  note・Xで読者や編集者と直接対峙する生身の書き手。現場で泥臭く働く当事者としての信頼感と、再現性のある一次情報ノウハウを届ける。
+* 【主人公（作中キャラクター）】：喝活亭の店長（マスター）
+  物語の中でジェミーや現場スタッフとドタバタ劇を繰り広げるフィクションの推進役。
+
+【公式プロフィール文（X・note共通決定稿）】
+カツカツ店長
+
+IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食店を経営。仕込みと雑務に追われながらも、AIを相棒に現場の業務改善ツールを爆速自作中！
+
+📖 note連載中
+『就職氷河期世代の俺が、40過ぎて脱サラしたら、チートスキル「AI」で超パーソナル型DXを爆進している件』
+
+市販の高額SaaSに現場を合わせるな。厨房の悲鳴からツールを自作する「超パーソナル型DX」のリアルをお届けします。
+
+### 2. 本書の思い・主題（読者に届けるコアメッセージ）
+【魂のステートメント】
+DX（デジタルトランスフォーメーション）とは、大企業が億単位の予算をかけて高額なSaaSをぶち込むことだけではない！
+個人でも、自分に合った、自分だけにフォーカスされた、自分専用のDXが、お金と時間をかけずにできる時代になった。
+
+【コアメッセージ・4つの柱】
+* 「知識があるからこそ諦めていた」過去の絶望を覆す
+  昔取った杵柄（LAMP環境、Linux、Apache、MySQL、自宅・店内Webサーバー）があるからこそ、環境構築だけで膨大な時間が溶ける現実を知っている。「ランチ営業と仕込みで手一杯な個人店主に、そんな時間は1ミリもない」と諦めていた。
+  その「知識の壁」と「諦め」を、AI（Antigravity、Gemini、Cloudflare Pages、GitHub）が根底から覆した。サーバー構築もコマンドも不要。数分で動くものが目の前に現れる衝撃を届ける。
+* 「属人化するな」という社畜時代の呪縛をぶち破れ
+  大企業のシステム部門は「属人化の排除」「マニュアル化」「誰でも使える汎用性」を叫ぶ。だが、個人事業主や小規模チームにとって、そんなものは知ったことではない。
+  「属人化？ 大いに結構！ 俺が使いやすければ、俺専用の歪なツールで100点満点だ」。
+  メンテ不能で放置されたエクセルマクロの悪夢を恐れる必要はない。動かなくなったら、またGeminiに聞いて直させればいいだけ。修正コストがゼロの時代に、汎用性という名の妥協は不要。
+* AIを「話し相手」から「最強の専属プログラマー」へ
+  最初は壁打ち、調べ物、人生相談の相手でしかなかったAI。しかし、一歩踏み込んで実務の泥臭い課題を投げた瞬間、AIは「血の通った実用ツールを即座に錬成するチート軍師」へと化けた。
+  「こんなことAIにできるわけがない」というタガが外れた瞬間、世界が変わる。現場の課題に寄り添えない市販のしょっぱいソフト屋は、本当に生き残れない時代が来た。
+* 個人事業主・零細企業への魂のエール
+  「市販のシステムは高すぎる」「帯に短し襷に長し」「無料アプリは連携できない」。そんな現場の悲鳴をそのままAIにぶつけてほしい。
+  要件定義なんて小難しい言葉はいらない。言葉に詰まるなら、「手書きの日計表や、散らかった厨房の写真をそのまま貼り付けて『なんとかして』と叫べばいい」。
+  Geminiは絶対に「できません」とは言わない。「だいたいできますよ」と、泥臭い現場に寄り添う手段を提示してくれる。まずやってみよう。自分専用のDXは、スマホ片手の一言から始まる。
+* 【最終回の大伏線（エモい種明かし）】
+  「このnote連載自体が、厨房の仕込みの合間にゼロから自作したCloudflare＋AIの『超パーソナル型DX（執筆作戦指令室）』によって爆速で生み出された最大の成果物だった」という真実で物語を締めくくる。
+
+### 3. 連載構成（三本柱エコシステム）
+①【本編】：二段ロケット型ストーリー
+* 前半【現場ノベル・漫才パート】：店長とジェミー（＋現場スタッフ）の掛け合い。現場の理不尽、あるある、ボヤきと笑いで読者を惹き込む。
+* 後半【現場DX・実践解説パート】：店長の一人称モノローグ（種明かし風）＋ジェミーの毒舌注釈。「実際に投げたGeminiプロンプト」「0円から始める実装手順」を親身に手ほどき。
+* 専門用語の処理方針：巻末の用語集は置かず、本文の会話内でジェミーが身近な例え（陳列棚、のり弁当等）で1行ツッコミを入れて即座に回収する。
+
+②【閑話①：妻・マチコのGAS奮闘記】（スピンオフ・全4回完結）
+* タイトル（仮）：『開発経験ゼロな、アラフィフ超文系キャリアウーマンが始めるGAS入門』
+* テーマ：大企業勤めの妻・マチコが、進まないDXとAIに二の足を踏む経営陣に辟易としながら、部下の残業を減らしウェルビーイング（笑）を取り戻すため、システム部に怒られない範囲（Google Workspace/GAS）で繰り広げるゲリラ業務改善記。
+* 特別構成（ハイブリッド形式）：
+  【前半：小説パート】三人称限定視点＋（心の叫び）。大企業のリアルな悲哀を描くハードボイルド小説調。
+  【後半：解決・解説パート】一転してジェミーとの掛け合いへ戻り、実用的なGASコードと実装手順を手ほどき。
+* 全4話ラインナップ：
+  1. 第1話：スプシとGASでつくる、私だけの秘密基地（マイポータルサイト）
+  2. 第2話：Googleカレンダー連携 ── 「今週何やってたっけ？」からの脱却
+  3. 第3話：Gmail連携 ── 送信履歴に埋もれたタスクをサルベージせよ
+  4. 第4話：総括！ Calendar×Gmail×スプシで錬成する「全自動・週報生成機」
+
+③【閑話②：ジェミーの優しいぱそこん教室】（初心者救済・不定期）
+* テーマ：本編に出てきたIT概念を、ジェミーがちょっぴり上から目線で噛み砕いて解説する補習コーナー。
+
+### 4. 舞台・店舗設定
+* 店名：喝活亭（かつかてい）
+  由来：喝入れて活！ 好きすぎて滅！ 漢字で書くといかつい名前だが、カタカナにすると「カツカツ」。いつも何かに追われている店長らしい名前。
+* 業態：道の駅（農産物直売所）に併設された、とんかつ定食屋
+* 営業時間：11:00〜15:00（ランチ限定・4時間一本勝負）
+* 定休日：火曜日
+* 店舗のリアルな制約・あるある：
+  * 「4時間の濃縮バトル」：ディナー営業がないため、昼の2〜3回転が全て。レジ詰まりやオーダー遅延が即、致命傷になる。
+  * 「15時閉店なのに帰れない」：油の濾過、床掃除、パン粉の片付け、肉の筋引き・仕込み、そして大家である管理事務所への売上報告書作成で、気づけば深夜。
+  * 「大家（道の駅事務所）への売上報告」：毎日の日計表提出が義務付けられており、1円でもズレると翌朝の追及対象になる。
+  * 「現金率が異常に高い」：直売所で買い物した地元のお年寄りや観光客が多く、小銭が大量に動く（＝金種計算機の切実さ）。
+
+### 5. 登場キャラクター設定・人間関係
+【呼び方マトリクス】
+* 店長 ➔ スタッフ：「マツさん」「リン」「ショータ」（※リンとショータは息子・娘枠のため呼び捨て）
+* スタッフ ➔ 店長：「店長」
+* ジェミー ➔ 店長：「マスター」
+* 妻（マチコ）の作中での扱い：
+  本編では生活感を抑えるため直接登場させず、店長のモノローグ内で「店の経理を握る最高権力者」「家庭内査問会」として言及するのみにとどめる。閑話（スピンオフ）では独立した単独主人公として活躍する。
+
+【主要メンバー】
+* 店長（マスター）：主人公（40代後半・既婚）
+  氷河期世代の元社畜。知識が西暦2000年（テレホマン時代）で停止しているが、現場改善の意欲と熱意は高い。
+* ジェミー（J.E.M.I.）：作中AIキャラクター
+  濃紺スーツの毒舌ツンデレ軍師。マスターの古い知識を叩き斬りつつ、現場目線の開発を献身的にサポートする。
+* 妻（マチコ）：閑話主人公（アラフィフ）
+  大手企業勤務の超文系キャリアウーマン。現場思いのリアリストで、GASを用いた社内ゲリラDXを展開する。
+* マツさん：50代主婦パート
+  パワー系重戦士。「なんとかなるよ！」が口癖。スマホの細かい操作や複雑な手順が大嫌い。
+* リン：20歳女子大生
+  氷結参謀。高校時代からの古参で裏番長的存在。店長からは娘枠。常識人枠で感情の起伏が少ない。
+* ショータ：18歳高校生
+  残念勇者。やる気満々の体育会系だが、おっちょこちょいなトラブルメーカー。店長からは息子枠。
+* モブスタッフ：主婦・学生パート（4名）
+  シフト調整や急な欠勤など、日常的な店舗管理の課題を象徴する存在。
+
+### 6. 店長の2000年代ボケ語録・回想ライブラリ（執筆辞書）
+【回線・ハードウェア編】
+* アナログモデム：「ピーヒョロロロ……ガガガッ！」の接続儀式。
+* テレホーダイ：23時（テレホタイム）になった瞬間に回線が一斉に重くなる狂気。
+* Gateway Solo 3400：ドッキングステーションをガシャコンと合体させる男のロマン。
+* PCカードスロット＆AirH"（エアエッジ）：薄型ノートの横っ腹にアンテナ付きカードを挿し、32k/64k/128kでドヤ顔したモバイル戦士の記憶。
+* フロッピーディスク（2HD）：1.44MBの限界。
+
+【開発・社畜トラウマ編】
+* FFFTP ＆ パーミッション：CGIが動かず「パーミッション755」に頭を抱える。
+* マーキータグ（<marquee>）：文字を左右に流すおもてなし。
+* アクセスカウンター＆キリ番：7777ゲット、足跡帳カキコ、踏み逃げ厳禁。
+* 完全図解Excel97の万年カレンダー：関数を駆使して苦労して作り、二度と開かなかった苦い思い出。
+* マクロ組んだ人の異動：属人化してブラックボックス化する恐怖。
+* 秀丸エディタ：使っているだけで「デキる人」に見えた時代。
+
+【Webサービス・カルチャー編】
+* ジオシティーズ：俺たちの青春の故郷。
+* Yahoo!JAPAN登録申請：ディレクトリ型審査待ちの緊張感。
+* FLASHサイト：オープニングスキップボタン（Enter）の美学。
+* 忍者ツールズ：アクセス解析の忍者カウンター。
+* Officeアシスタントのイルカ（カッパー君）：「お前を消す方法」と検索されまくったトラウマ。
+* IE6の悪夢：CSSレイアウト崩れに怯える亡霊。
+
+### 7. 技術＆エピソードのステップアップ計画
+* 第1幕：原点（店長 × ジェミー）
+  導入技術：Gemini単体 ＋ 単一HTMLファイル（PCローカルで開くだけ）
+  テーマ：まずは自分一人の作業効率化からスタート。ローカル環境での即効性を検証。
+* 第2幕：現場の壁とクラウド化（マツさん登場）
+  導入技術：Cloudflare Pages（Web公開・スマホから即アクセス）
+  テーマ：現場スタッフへの展開と「使いづらい」の反発。Web化によるアクセシビリティ向上。
+  急所ポイント：ネット記事のUIが古くて役に立たず、「画面スクショ丸投げ」で突破するエピソード。
+* 第3幕：見た目のプロ化と現場UX（リン＆ショータ合流）
+  導入技術：UIフレームワーク／Tailwind／Antigravity／PWA化
+  テーマ：若手スタッフの巻き込みとUI/UXの劇的改善。アプリ感覚で使える操作性の追求。
+  急所ポイント：英語だらけのAntigravityへの恐怖と、職人の道具として使いこなすブレイクスルー。
+* 第4幕：本格運用と基地の完成
+  導入技術：GitHub連携・Cloudflare D1（データベース）・Cloudflare Zero Trust（認証）
+  テーマ：データの永続化とセキュリティの確保。持続可能な店舗インフラの確立。
+  急所ポイント：スマホ片手にGeminiとGitHubだけで即座に世界が変わる「現代の魔法（CI/CD）」への感動。
+
+### 8. 執筆運用フレームワーク（黄金テンプレート）
+【1話あたりの構成（目標：3,000〜4,000字）】
+* 前半：現場ノベル・漫才パート（約2,000字）
+  Scene 1：戦場の日常と「事件」勃発（油の匂い、小銭の音、スタッフの悲鳴や理不尽な業務）
+  Scene 2：店長の迷走（2000年代の古いIT知識や手作業で泥沼化、スタッフの冷ややかなツッコミ、妻の影）
+  Scene 3：ジェミー召喚と毒舌ツッコミ（スマホから青いホログラム出現、毒舌正論でメッタ斬り、店長の逆ギレ・無茶振り）
+  Scene 4：愚痴の「要件定義化」とプロトタイプ完成（店長の感情論をシステム要件へ翻訳、爆速コード出力、動いて驚愕）
+* 後半：現場DX・実践解説パート（約1,500字）
+  Section 1：種明かし（店長の一人称モノローグ）（現場目線で「なぜ既存ソフトではなく自作が勝つのか」を解説）
+  Section 2：実際に投げたプロンプト（実弾公開）（Geminiにそのままコピペできる指示文）
+  Section 3：0円・爆速の実装3ステップ（中学生でもわかる平易な言葉で手順化）
+  Section 4：ジェミーのワンポイント毒舌メモ ＆ 次回予告
+
+【スイスイ執筆・指示プロンプト（運用実行フォーマット）】
+【指示】
+基本設計書と黄金テンプレートに沿って、第〇話を執筆してください。
+* 今回のテーマ：（例：金種計算機 単一HTML編）
+* 発生する事件：（例：15時閉店なのに小銭が1円合わず、大家への日計表提出期限が迫る中、床に小銭をブチまけて深夜残業確定の絶望）
+* 登場キャラ：店長、ジェミー、マツさん、リン
+* 差し込むボケ：（例：Gateway Solo3400、イルカ、忍者ツールズ）`;
+
+    // --- タブ切り替え ---
     function switchTab(tabId, el) {
       document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(e => e.classList.remove('active'));
@@ -719,6 +580,96 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
         document.body.removeChild(tempArea);
         alert(successMsg);
       }
+    }
+
+    // --- 設定タブ：レンダリング＆インポート・エクスポート ---
+    const ACCORDION_COLORS = ['#38bdf8', '#eab308', '#10b981', '#ec4899', '#6366f1', '#f97316', '#14b8a6', '#a855f7'];
+
+    async function loadSettings() {
+      let rawText = localStorage.getItem('project_settings_text');
+      if (!rawText) {
+        try {
+          const res = await fetch('/api/settings');
+          const data = await res.json();
+          if (data && data.text) {
+            rawText = data.text;
+            localStorage.setItem('project_settings_text', rawText);
+          }
+        } catch (e) {
+          console.warn('D1 settings fetch failed, fallback to default.');
+        }
+      }
+      if (!rawText) rawText = DEFAULT_SETTINGS_TEXT;
+
+      document.getElementById('settings-import-text').value = rawText;
+      renderSettings(rawText);
+    }
+
+    function renderSettings(rawText) {
+      const container = document.getElementById('settings-accordion-container');
+      const lines = rawText.split('\n');
+      
+      let sections = [];
+      let currentTitle = '';
+      let currentContent = [];
+
+      lines.forEach(line => {
+        if (line.startsWith('# ')) {
+          document.getElementById('settings-rendered-title').innerText = line.replace('# ', '').trim();
+        } else if (line.startsWith('### ')) {
+          if (currentTitle) {
+            sections.push({ title: currentTitle, content: currentContent.join('\n').trim() });
+          }
+          currentTitle = line.replace('### ', '').trim();
+          currentContent = [];
+        } else {
+          currentContent.push(line);
+        }
+      });
+      if (currentTitle) {
+        sections.push({ title: currentTitle, content: currentContent.join('\n').trim() });
+      }
+
+      container.innerHTML = sections.map((sec, idx) => {
+        const color = ACCORDION_COLORS[idx % ACCORDION_COLORS.length];
+        return `
+          <details class="concept-accordion" style="border-left-color: ${color};">
+            <summary>${escapeHtml(sec.title)}</summary>
+            <div class="accordion-body">${escapeHtml(sec.content)}</div>
+          </details>
+        `;
+      }).join('');
+    }
+
+    async function importSettings() {
+      const rawText = document.getElementById('settings-import-text').value.trim();
+      if (!rawText) return alert('テキストが入力されていません！');
+
+      localStorage.setItem('project_settings_text', rawText);
+      renderSettings(rawText);
+
+      try {
+        await fetch('/api/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: rawText })
+        });
+      } catch (e) {
+        console.warn('D1 sync skipped.');
+      }
+      alert('設計書をインポートし、表示を更新しました！');
+    }
+
+    function exportSettings() {
+      const rawText = document.getElementById('settings-import-text').value.trim();
+      if (!rawText) return alert('コピーする設計書がありません！');
+      copyToClipboard(rawText, '設計書の全文テキストをクリップボードにコピーしました！');
+    }
+
+    function resetSettingsDefault() {
+      if (!confirm('設計書を初期状態（完全統合・最終決定版）に戻しますか？')) return;
+      document.getElementById('settings-import-text').value = DEFAULT_SETTINGS_TEXT;
+      importSettings();
     }
 
     // --- ネタ帳機能 ---
@@ -971,7 +922,7 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
       }[tag] || tag));
     }
 
-    // スプラッシュ画面の表示制御
+    // スプラッシュ画面の制御
     window.addEventListener('DOMContentLoaded', () => {
       const splash = document.getElementById('splash-screen');
       if (splash) {
@@ -984,7 +935,7 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
       }
     });
 
-    // サービスワーカー（sw.js）の自動登録
+    // サービスワーカー（sw.js）の登録
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -1001,6 +952,7 @@ IT企業で20年の社畜を経て10年前に脱サラ。今は小さな飲食�
     window.addEventListener('load', () => {
       fetchIdeas();
       fetchDrafts();
+      loadSettings();
     });
   </script>
 </body>
