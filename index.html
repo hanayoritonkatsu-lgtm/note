@@ -69,8 +69,8 @@
     
     button.btn { background: var(--accent); color: #000; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; width: 100%; }
     button.btn:hover { background: var(--accent-hover); }
-    button.btn-secondary { background: #475569; color: #fff; font-weight: bold; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; }
-    button.btn-secondary:hover { background: #64748b; }
+    button.btn-secondary { background: #334155; color: #fff; font-weight: bold; border: 1px solid var(--border); padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+    button.btn-secondary:hover { background: #475569; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
     
     .item-card { 
@@ -98,7 +98,6 @@
       letter-spacing: 0.02em;
     }
 
-    /* カテゴリ別の網掛けカラー */
     .item-tag.tag-main {
       background-color: rgba(14, 165, 233, 0.2);
       color: #38bdf8;
@@ -123,7 +122,6 @@
     .item-date { font-size: 0.75rem; color: var(--text-muted); }
     .item-title { font-weight: bold; font-size: 0.95rem; margin-bottom: 4px; }
 
-    /* 本文は最大3行で省略（末尾を「…」にする） */
     .item-body { 
       font-size: 0.85rem; 
       color: var(--text-muted); 
@@ -194,7 +192,7 @@
       margin-bottom: 0;
     }
 
-    /* ネタ帳専用：全画面モーダル（閲覧＆編集両対応） */
+    /* ネタ帳専用 全画面エディタモーダル */
     #idea-modal {
       display: none;
       position: fixed;
@@ -205,26 +203,92 @@
       background: #090d16;
       z-index: 10001;
       flex-direction: column;
-      padding: 12px;
+      padding: 12px 14px env(safe-area-inset-bottom, 14px) 14px;
     }
     #idea-modal.active {
       display: flex;
     }
-    .idea-modal-header {
-      display: flex;
-      justify-content: space-between;
+
+    /* 最上部ツールバー：横並び */
+    .idea-modal-toolbar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.3fr;
+      gap: 8px;
       align-items: center;
+      margin-bottom: 12px;
+    }
+    .toolbar-btn {
+      padding: 10px 0;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .btn-cancel {
+      background: #334155;
+      color: #cbd5e1;
+    }
+    .btn-copy {
+      background: #0f766e;
+      color: #fff;
+    }
+    .btn-save {
+      background: var(--accent);
+      color: #04101c;
+    }
+    .toolbar-btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+
+    /* モーダル内 入力エリア群 */
+    .modal-field-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: block;
+    }
+    #modal-idea-category {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      font-size: 0.95rem;
       margin-bottom: 10px;
     }
-    .modal-mode-badge {
-      font-size: 0.75rem;
-      padding: 3px 8px;
-      border-radius: 4px;
-      margin-left: 8px;
-      font-weight: normal;
+    #modal-idea-title {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 1.05rem;
+      font-weight: bold;
+      padding: 10px;
+      margin-bottom: 10px;
     }
-    .mode-view { background: #334155; color: #94a3b8; }
-    .mode-edit { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid #10b981; }
+    #modal-idea-title:focus,
+    #modal-idea-body:focus,
+    #modal-idea-category:focus {
+      border-color: var(--accent);
+      outline: none;
+    }
+    #modal-idea-body {
+      flex: 1;
+      width: 100%;
+      background: #020617;
+      border: 1px solid var(--border);
+      color: #fff;
+      font-size: 1rem;
+      line-height: 1.65;
+      padding: 12px;
+      border-radius: 6px;
+      resize: none;
+      margin-bottom: 0;
+    }
 
     /* 設定アコーディオン */
     details.concept-accordion {
@@ -288,37 +352,31 @@
     <textarea id="fs-textarea" placeholder="ここに集中して執筆してください..."></textarea>
   </div>
 
-  <!-- ネタ帳専用 全画面モーダル（閲覧モード ➔ タップで編集モード） -->
+  <!-- ネタ帳専用 全画面モーダル（整理された新レイアウト） -->
   <div id="idea-modal">
-    <div class="idea-modal-header">
-      <div style="display:flex; align-items:center;">
-        <span class="fs-header-title" id="idea-modal-title">💡 ネタ詳細</span>
-        <span id="idea-modal-badge" class="modal-mode-badge mode-view">閲覧モード</span>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button id="idea-modal-edit-btn" class="btn-secondary" style="padding:6px 12px; font-size:0.85rem;" onclick="switchToEditMode()">✏️ 編集</button>
-        <button class="fs-done-btn" onclick="closeIdeaModal()">閉じる ✕</button>
-      </div>
+    <!-- 1. 最上部ツールバー：キャンセル / コピー / 保存 -->
+    <div class="idea-modal-toolbar">
+      <button class="toolbar-btn btn-cancel" onclick="closeIdeaModal()">✕ キャンセル</button>
+      <button class="toolbar-btn btn-copy" onclick="copyModalIdea()">📋 コピー</button>
+      <button class="toolbar-btn btn-save" onclick="saveIdeaFromModal()">💾 D1に保存</button>
     </div>
 
-    <!-- ネタタイトル -->
-    <input type="text" id="modal-idea-title" placeholder="ネタの見出し（タップで編集）" readonly onclick="switchToEditMode()" style="background:#020617; font-weight:bold; font-size:1.05rem;">
+    <!-- 2. カテゴリ選択 -->
+    <label class="modal-field-label">分類</label>
+    <select id="modal-idea-category">
+      <option value="メインネタ">メインネタ</option>
+      <option value="gasネタ">gasネタ</option>
+      <option value="pc教室ネタ">pc教室ネタ</option>
+      <option value="その他">その他</option>
+    </select>
 
-    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-      <select id="modal-idea-category" style="margin-bottom:0; background:#020617;">
-        <option value="メインネタ">メインネタ</option>
-        <option value="gasネタ">gasネタ</option>
-        <option value="pc教室ネタ">pc教室ネタ</option>
-        <option value="その他">その他</option>
-      </select>
-      <button class="btn" style="width: auto; background:#059669; color:#fff; padding:6px 14px; white-space:nowrap;" onclick="copyModalIdea()">📋 コピー</button>
-    </div>
+    <!-- 3. タイトル入力 -->
+    <label class="modal-field-label">見出し・タイトル</label>
+    <input type="text" id="modal-idea-title" placeholder="ネタの見出し（タップして入力）">
 
-    <!-- ネタ本文（最初はreadonlyでキーボードを出さない） -->
-    <textarea id="modal-idea-body" readonly onclick="switchToEditMode()" placeholder="本文（タップで編集を開始）" style="flex:1; width:100%; background:#020617; color:#fff; font-size:1rem; line-height:1.6; padding:12px; border-radius:6px; outline:none; resize:none; margin-bottom:8px;"></textarea>
-
-    <!-- 保存ボタン -->
-    <button class="btn" id="modal-idea-save-btn" onclick="saveIdeaFromModal()" style="display:none; background:#38bdf8;">💾 変更をD1に保存</button>
+    <!-- 4. 本文入力 -->
+    <label class="modal-field-label">本文・メモ</label>
+    <textarea id="modal-idea-body" placeholder="ネタの詳細・感情・エピソード（タップして入力）"></textarea>
   </div>
 
   <header>
@@ -335,7 +393,6 @@
   <div class="container">
     <!-- タブ1: ネタ帳（一覧特化型） -->
     <div id="tab-ideas" class="tab-content active">
-      <!-- アクションバー -->
       <div class="card" style="padding: 12px; margin-bottom: 12px;">
         <div style="display: flex; gap: 8px; align-items: center;">
           <button class="btn" style="flex: 1.2; font-size: 0.95rem; padding: 10px;" onclick="openNewIdeaModal()">➕ 新規ネタを投下</button>
@@ -351,7 +408,6 @@
         </div>
       </div>
 
-      <!-- ネタ一覧リスト -->
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <h2 style="margin-bottom:0;">📋 クラウド同期ネタ一覧</h2>
@@ -608,7 +664,7 @@
       copyToClipboard(rawText, '設計書の全文テキストをクリップボードにコピーしました！');
     }
 
-    // --- ネタ帳機能（一覧特化 ＆ 全画面モーダル） ---
+    // --- ネタ帳機能（一覧特化 ＆ 整理された全画面モーダル） ---
     let currentModalIdeaId = null;
 
     function getCategoryTagClass(category) {
@@ -676,16 +732,13 @@
       renderIdeaList();
     }
 
-    // --- ネタ帳モーダル制御（閲覧 ➔ 編集切り替え） ---
+    // --- ネタ帳モーダル制御 ---
     function openNewIdeaModal() {
       currentModalIdeaId = null;
-      document.getElementById('idea-modal-title').innerText = '⚡ 新規ネタ投下';
       document.getElementById('modal-idea-title').value = '';
       document.getElementById('modal-idea-body').value = '';
       document.getElementById('modal-idea-category').value = 'メインネタ';
       
-      // 新規作成は最初から編集モード（キーボード入力可能）
-      switchToEditMode(true);
       document.getElementById('idea-modal').classList.add('active');
       document.getElementById('modal-idea-title').focus();
     }
@@ -695,48 +748,11 @@
       if (!idea) return;
       currentModalIdeaId = idea.id;
 
-      document.getElementById('idea-modal-title').innerText = '💡 ネタ詳細';
       document.getElementById('modal-idea-title').value = idea.title;
       document.getElementById('modal-idea-body').value = idea.body || '';
       document.getElementById('modal-idea-category').value = idea.category || 'メインネタ';
 
-      // 既存ネタ閲覧時は最初は「閲覧モード」（キーボード暴発防止）
-      switchToViewMode();
       document.getElementById('idea-modal').classList.add('active');
-    }
-
-    function switchToViewMode() {
-      const titleInput = document.getElementById('modal-idea-title');
-      const bodyInput = document.getElementById('modal-idea-body');
-      const badge = document.getElementById('idea-modal-badge');
-      const editBtn = document.getElementById('idea-modal-edit-btn');
-      const saveBtn = document.getElementById('modal-idea-save-btn');
-
-      titleInput.setAttribute('readonly', 'true');
-      bodyInput.setAttribute('readonly', 'true');
-      badge.className = 'modal-mode-badge mode-view';
-      badge.innerText = '閲覧モード（タップで編集）';
-      editBtn.style.display = 'inline-block';
-      saveBtn.style.display = 'none';
-    }
-
-    function switchToEditMode(isNew = false) {
-      const titleInput = document.getElementById('modal-idea-title');
-      const bodyInput = document.getElementById('modal-idea-body');
-      const badge = document.getElementById('idea-modal-badge');
-      const editBtn = document.getElementById('idea-modal-edit-btn');
-      const saveBtn = document.getElementById('modal-idea-save-btn');
-
-      titleInput.removeAttribute('readonly');
-      bodyInput.removeAttribute('readonly');
-      badge.className = 'modal-mode-badge mode-edit';
-      badge.innerText = '編集モード';
-      editBtn.style.display = 'none';
-      saveBtn.style.display = 'block';
-
-      if (!isNew) {
-        bodyInput.focus();
-      }
     }
 
     function closeIdeaModal() {
