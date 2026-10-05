@@ -142,7 +142,7 @@
     .action-btn.copy:hover { color: #86efac; border-color: #10b981; background: rgba(16,185,129,0.1); }
     .action-btn.delete:hover { color: #fca5a5; border-color: var(--danger); background: rgba(239,68,68,0.1); }
 
-    /* 全画面入力モーダル */
+    /* 全画面共通エディタモーダル */
     #fs-modal {
       display: none;
       position: fixed;
@@ -194,6 +194,38 @@
       margin-bottom: 0;
     }
 
+    /* ネタ帳専用：全画面モーダル（閲覧＆編集両対応） */
+    #idea-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #090d16;
+      z-index: 10001;
+      flex-direction: column;
+      padding: 12px;
+    }
+    #idea-modal.active {
+      display: flex;
+    }
+    .idea-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .modal-mode-badge {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      font-weight: normal;
+    }
+    .mode-view { background: #334155; color: #94a3b8; }
+    .mode-edit { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid #10b981; }
+
     /* 設定アコーディオン */
     details.concept-accordion {
       background: #0b1324;
@@ -228,7 +260,6 @@
       transform: rotate(180deg);
     }
     
-    /* アコーディオン本文：文字色をクッキリ白系(#f1f5f9)に変更 */
     .accordion-body {
       margin-top: 10px;
       padding-top: 8px;
@@ -248,13 +279,46 @@
     <img src="logo.png" alt="ハナトンソフト ロゴ" id="splash-logo">
   </div>
 
-  <!-- 全画面入力モーダル画面 -->
+  <!-- 執筆・プロット・設定用 全画面入力モーダル画面 -->
   <div id="fs-modal">
     <div class="fs-header">
       <span class="fs-header-title" id="fs-modal-label">全画面エディタ</span>
       <button class="fs-done-btn" onclick="closeFullscreenEditor()">完了 ✓</button>
     </div>
     <textarea id="fs-textarea" placeholder="ここに集中して執筆してください..."></textarea>
+  </div>
+
+  <!-- ネタ帳専用 全画面モーダル（閲覧モード ➔ タップで編集モード） -->
+  <div id="idea-modal">
+    <div class="idea-modal-header">
+      <div style="display:flex; align-items:center;">
+        <span class="fs-header-title" id="idea-modal-title">💡 ネタ詳細</span>
+        <span id="idea-modal-badge" class="modal-mode-badge mode-view">閲覧モード</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button id="idea-modal-edit-btn" class="btn-secondary" style="padding:6px 12px; font-size:0.85rem;" onclick="switchToEditMode()">✏️ 編集</button>
+        <button class="fs-done-btn" onclick="closeIdeaModal()">閉じる ✕</button>
+      </div>
+    </div>
+
+    <!-- ネタタイトル -->
+    <input type="text" id="modal-idea-title" placeholder="ネタの見出し（タップで編集）" readonly onclick="switchToEditMode()" style="background:#020617; font-weight:bold; font-size:1.05rem;">
+
+    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+      <select id="modal-idea-category" style="margin-bottom:0; background:#020617;">
+        <option value="メインネタ">メインネタ</option>
+        <option value="gasネタ">gasネタ</option>
+        <option value="pc教室ネタ">pc教室ネタ</option>
+        <option value="その他">その他</option>
+      </select>
+      <button class="btn" style="width: auto; background:#059669; color:#fff; padding:6px 14px; white-space:nowrap;" onclick="copyModalIdea()">📋 コピー</button>
+    </div>
+
+    <!-- ネタ本文（最初はreadonlyでキーボードを出さない） -->
+    <textarea id="modal-idea-body" readonly onclick="switchToEditMode()" placeholder="本文（タップで編集を開始）" style="flex:1; width:100%; background:#020617; color:#fff; font-size:1rem; line-height:1.6; padding:12px; border-radius:6px; outline:none; resize:none; margin-bottom:8px;"></textarea>
+
+    <!-- 保存ボタン -->
+    <button class="btn" id="modal-idea-save-btn" onclick="saveIdeaFromModal()" style="display:none; background:#38bdf8;">💾 変更をD1に保存</button>
   </div>
 
   <header>
@@ -269,27 +333,15 @@
   </div>
 
   <div class="container">
-    <!-- タブ1: ネタ帳 -->
+    <!-- タブ1: ネタ帳（一覧特化型） -->
     <div id="tab-ideas" class="tab-content active">
-      <div class="card">
-        <h2 id="idea-form-title">⚡ クイックネタ投下（D1即時保存）</h2>
-        <input type="text" id="idea-title" placeholder="ネタの見出し（例：レジ締め1円合わない事件）">
-        <textarea id="idea-body" class="fullscreen-trigger" placeholder="タップすると全画面でゆったり入力できます" onclick="openFullscreenEditor('idea-body', '💡 ネタ帳の本文入力')"></textarea>
-        
-        <div style="display: flex; gap: 8px;">
+      <!-- アクションバー -->
+      <div class="card" style="padding: 12px; margin-bottom: 12px;">
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn" style="flex: 1.2; font-size: 0.95rem; padding: 10px;" onclick="openNewIdeaModal()">➕ 新規ネタを投下</button>
           <div style="flex: 1;">
-            <label style="font-size:0.75rem; color:var(--text-muted); display:block; margin-bottom:4px;">カテゴリ設定</label>
-            <select id="idea-category">
-              <option value="メインネタ">メインネタ</option>
-              <option value="gasネタ">gasネタ</option>
-              <option value="pc教室ネタ">pc教室ネタ</option>
-              <option value="その他">その他</option>
-            </select>
-          </div>
-          <div style="flex: 1;">
-            <label style="font-size:0.75rem; color:var(--accent); display:block; margin-bottom:4px; font-weight:bold;">🔍 表示絞り込み</label>
-            <select id="idea-filter" onchange="applyIdeaFilter()" style="border-color:var(--accent);">
-              <option value="all">すべて表示</option>
+            <select id="idea-filter" onchange="applyIdeaFilter()" style="margin-bottom: 0; border-color: var(--accent); padding: 8px;">
+              <option value="all">🔍 全て表示</option>
               <option value="メインネタ">メインネタのみ</option>
               <option value="gasネタ">gasネタのみ</option>
               <option value="pc教室ネタ">pc教室ネタのみ</option>
@@ -297,16 +349,14 @@
             </select>
           </div>
         </div>
-
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn" id="idea-save-btn" style="flex: 2; min-width: 140px;" onclick="saveIdea()">D1データベースへ送信</button>
-          <button class="btn" style="flex: 1; min-width: 110px; background: #059669; color: #fff;" onclick="exportCurrentIdea()">📋 コピー</button>
-          <button class="btn-secondary" id="idea-cancel-btn" style="display: none;" onclick="resetIdeaForm()">新規作成に戻す</button>
-        </div>
       </div>
 
+      <!-- ネタ一覧リスト -->
       <div class="card">
-        <h2>📋 クラウド同期ネタ一覧（クリックで編集）</h2>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <h2 style="margin-bottom:0;">📋 クラウド同期ネタ一覧</h2>
+          <span style="font-size:0.75rem; color:var(--text-muted);">タップで詳細・編集</span>
+        </div>
         <div id="idea-list" class="item-list"></div>
       </div>
     </div>
@@ -340,7 +390,6 @@
 
     <!-- タブ3: 設定 -->
     <div id="tab-settings" class="tab-content">
-      <!-- インポート＆エクスポート操作パネル -->
       <div class="card" style="border-color: #38bdf8;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <h2 style="margin-bottom:0;">⚙️ 設計書の管理・更新</h2>
@@ -357,7 +406,6 @@
         </details>
       </div>
 
-      <!-- 動的に描画される設計書アコーディオン -->
       <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <h2 style="margin-bottom:0;" id="settings-rendered-title">📑 プロジェクト基本設計書</h2>
@@ -383,7 +431,7 @@
       if (targetTabBtn) targetTabBtn.classList.add('active');
     }
 
-    // --- 全画面エディタ制御 ---
+    // --- 執筆・設定用 全画面エディタ制御 ---
     let activeInputTargetId = null;
 
     function openFullscreenEditor(targetId, title) {
@@ -414,13 +462,15 @@
     let touchStartY = 0;
 
     window.addEventListener('touchstart', (e) => {
-      if (document.getElementById('fs-modal').classList.contains('active')) return;
+      if (document.getElementById('fs-modal').classList.contains('active') ||
+          document.getElementById('idea-modal').classList.contains('active')) return;
       touchStartX = e.changedTouches[0].screenX;
       touchStartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     window.addEventListener('touchend', (e) => {
-      if (document.getElementById('fs-modal').classList.contains('active')) return;
+      if (document.getElementById('fs-modal').classList.contains('active') ||
+          document.getElementById('idea-modal').classList.contains('active')) return;
       const touchEndX = e.changedTouches[0].screenX;
       const touchEndY = e.changedTouches[0].screenY;
       handleSwipe(touchStartX, touchStartY, touchEndX, touchEndY);
@@ -464,20 +514,17 @@
     const ACCORDION_COLORS = ['#38bdf8', '#eab308', '#10b981', '#ec4899', '#6366f1', '#f97316', '#14b8a6', '#a855f7'];
 
     async function loadSettings() {
-      // ① まずは端末の localStorage をチェックして即時反映（ゼロ秒描画）
       let rawText = localStorage.getItem('project_settings_text');
       if (rawText) {
         document.getElementById('settings-import-text').value = rawText;
         renderSettings(rawText);
       }
 
-      // ② バックエンド（D1）から最新データをフェッチして同期
       try {
         const res = await fetch('/api/settings');
         if (res.ok) {
           const data = await res.json();
           if (data && data.text) {
-            // D1の内容に更新（または初回格納）
             if (rawText !== data.text) {
               rawText = data.text;
               localStorage.setItem('project_settings_text', rawText);
@@ -490,7 +537,6 @@
         console.warn('D1 settings fetch failed, local cache maintained.');
       }
 
-      // ③ 万一キャッシュもD1も空だった場合（完全な初回起動）
       if (!rawText) {
         const container = document.getElementById('settings-accordion-container');
         container.innerHTML = '<div style="color:var(--text-muted); font-size:0.85rem; padding:10px;">設定データがありません。「設計書の一括取り込み・更新」から登録してください。</div>';
@@ -562,8 +608,8 @@
       copyToClipboard(rawText, '設計書の全文テキストをクリップボードにコピーしました！');
     }
 
-    // --- ネタ帳機能 ---
-    let currentIdeaId = null;
+    // --- ネタ帳機能（一覧特化 ＆ 全画面モーダル） ---
+    let currentModalIdeaId = null;
 
     function getCategoryTagClass(category) {
       switch (category) {
@@ -610,7 +656,7 @@
         const tagClass = getCategoryTagClass(cat);
 
         return `
-          <div class="item-card" onclick="loadIdeaToEditor('${item.id}')">
+          <div class="item-card" onclick="openIdeaModal('${item.id}')">
             <div class="card-actions" onclick="event.stopPropagation()">
               <button class="action-btn copy" onclick="copyIdeaItem('${item.id}')">コピー</button>
               <button class="action-btn delete" onclick="deleteIdea('${item.id}')">削除</button>
@@ -630,16 +676,84 @@
       renderIdeaList();
     }
 
-    async function saveIdea() {
-      const title = document.getElementById('idea-title').value.trim();
-      const body = document.getElementById('idea-body').value.trim();
+    // --- ネタ帳モーダル制御（閲覧 ➔ 編集切り替え） ---
+    function openNewIdeaModal() {
+      currentModalIdeaId = null;
+      document.getElementById('idea-modal-title').innerText = '⚡ 新規ネタ投下';
+      document.getElementById('modal-idea-title').value = '';
+      document.getElementById('modal-idea-body').value = '';
+      document.getElementById('modal-idea-category').value = 'メインネタ';
+      
+      // 新規作成は最初から編集モード（キーボード入力可能）
+      switchToEditMode(true);
+      document.getElementById('idea-modal').classList.add('active');
+      document.getElementById('modal-idea-title').focus();
+    }
+
+    function openIdeaModal(id) {
+      const idea = (window._ideaCache || []).find(i => i.id === id);
+      if (!idea) return;
+      currentModalIdeaId = idea.id;
+
+      document.getElementById('idea-modal-title').innerText = '💡 ネタ詳細';
+      document.getElementById('modal-idea-title').value = idea.title;
+      document.getElementById('modal-idea-body').value = idea.body || '';
+      document.getElementById('modal-idea-category').value = idea.category || 'メインネタ';
+
+      // 既存ネタ閲覧時は最初は「閲覧モード」（キーボード暴発防止）
+      switchToViewMode();
+      document.getElementById('idea-modal').classList.add('active');
+    }
+
+    function switchToViewMode() {
+      const titleInput = document.getElementById('modal-idea-title');
+      const bodyInput = document.getElementById('modal-idea-body');
+      const badge = document.getElementById('idea-modal-badge');
+      const editBtn = document.getElementById('idea-modal-edit-btn');
+      const saveBtn = document.getElementById('modal-idea-save-btn');
+
+      titleInput.setAttribute('readonly', 'true');
+      bodyInput.setAttribute('readonly', 'true');
+      badge.className = 'modal-mode-badge mode-view';
+      badge.innerText = '閲覧モード（タップで編集）';
+      editBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+    }
+
+    function switchToEditMode(isNew = false) {
+      const titleInput = document.getElementById('modal-idea-title');
+      const bodyInput = document.getElementById('modal-idea-body');
+      const badge = document.getElementById('idea-modal-badge');
+      const editBtn = document.getElementById('idea-modal-edit-btn');
+      const saveBtn = document.getElementById('modal-idea-save-btn');
+
+      titleInput.removeAttribute('readonly');
+      bodyInput.removeAttribute('readonly');
+      badge.className = 'modal-mode-badge mode-edit';
+      badge.innerText = '編集モード';
+      editBtn.style.display = 'none';
+      saveBtn.style.display = 'block';
+
+      if (!isNew) {
+        bodyInput.focus();
+      }
+    }
+
+    function closeIdeaModal() {
+      document.getElementById('idea-modal').classList.remove('active');
+      currentModalIdeaId = null;
+    }
+
+    async function saveIdeaFromModal() {
+      const title = document.getElementById('modal-idea-title').value.trim();
+      const body = document.getElementById('modal-idea-body').value.trim();
       if (!title) return alert('タイトルを入力してください');
 
       const payload = {
-        id: currentIdeaId,
+        id: currentModalIdeaId,
         title,
         body,
-        category: document.getElementById('idea-category').value,
+        category: document.getElementById('modal-idea-category').value,
         status: ''
       };
 
@@ -649,40 +763,17 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-        resetIdeaForm();
+        closeIdeaModal();
         fetchIdeas();
       } catch (e) {
         alert('保存に失敗しました');
       }
     }
 
-    function loadIdeaToEditor(id) {
-      const idea = (window._ideaCache || []).find(i => i.id === id);
-      if (!idea) return;
-      currentIdeaId = idea.id;
-      document.getElementById('idea-title').value = idea.title;
-      document.getElementById('idea-body').value = idea.body || '';
-      document.getElementById('idea-category').value = idea.category || 'メインネタ';
-
-      document.getElementById('idea-form-title').innerText = '✏️ ネタの編集更新';
-      document.getElementById('idea-save-btn').innerText = '変更を更新保存';
-      document.getElementById('idea-cancel-btn').style.display = 'inline-block';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function resetIdeaForm() {
-      currentIdeaId = null;
-      document.getElementById('idea-title').value = '';
-      document.getElementById('idea-body').value = '';
-      document.getElementById('idea-form-title').innerText = '⚡ クイックネタ投下（D1即時保存）';
-      document.getElementById('idea-save-btn').innerText = 'D1データベースへ送信';
-      document.getElementById('idea-cancel-btn').style.display = 'none';
-    }
-
-    function exportCurrentIdea() {
-      const title = document.getElementById('idea-title').value.trim();
-      const body = document.getElementById('idea-body').value.trim();
-      const category = document.getElementById('idea-category').value;
+    function copyModalIdea() {
+      const title = document.getElementById('modal-idea-title').value.trim();
+      const body = document.getElementById('modal-idea-body').value.trim();
+      const category = document.getElementById('modal-idea-category').value;
 
       if (!title && !body) return alert('コピーするネタがありません！');
 
@@ -701,7 +792,6 @@
       if (!confirm('このネタを削除してもよろしいですか？')) return;
       try {
         await fetch(`/api/ideas?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
-        if (currentIdeaId === id) resetIdeaForm();
         fetchIdeas();
       } catch (e) {
         alert('削除に失敗しました');
@@ -799,7 +889,7 @@
       document.getElementById('draft-title').value = draft.title;
       document.getElementById('draft-manzai').value = draft.manzai || '';
       document.getElementById('draft-tech').value = draft.tech || '';
-      document.getElementById('draft-form-title').innerText = '✏️️ 下書きの編集更新';
+      document.getElementById('draft-form-title').innerText = '✏ 下書きの編集更新';
       document.getElementById('draft-cancel-btn').style.display = 'inline-block';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
